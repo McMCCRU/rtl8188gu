@@ -160,7 +160,6 @@ struct rtw_wdev_priv {
 	u16 report_mgmt;
 
 	u8 is_mgmt_tx;
-	u16 mgmt_tx_cookie;
 
 	_mutex roch_mutex;
 
@@ -294,9 +293,6 @@ void rtw_cfg80211_rx_probe_request(_adapter *padapter, union recv_frame *rframe)
 int rtw_cfg80211_set_mgnt_wpsp2pie(struct net_device *net, char *buf, int len, int type);
 
 bool rtw_cfg80211_pwr_mgmt(_adapter *adapter);
-#ifdef CONFIG_RTW_80211K
-void rtw_cfg80211_rx_rrm_action(_adapter *adapter, union recv_frame *rframe);
-#endif
 
 #ifdef CONFIG_RFKILL_POLL
 void rtw_cfg80211_init_rfkill(struct wiphy *wiphy);
@@ -358,18 +354,9 @@ void rtw_cfg80211_deinit_rfkill(struct wiphy *wiphy);
 u8 rtw_cfg80211_ch_switch_notify(_adapter *adapter, u8 ch, u8 bw, u8 offset, u8 ht);
 #endif
 
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 26)) && (LINUX_VERSION_CODE < KERNEL_VERSION(4, 7, 0))
-#define NL80211_BAND_2GHZ IEEE80211_BAND_2GHZ
-#define NL80211_BAND_5GHZ IEEE80211_BAND_5GHZ
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 6, 0))
-#define NL80211_BAND_60GHZ IEEE80211_BAND_60GHZ
-#endif
+#if (KERNEL_VERSION(4, 7, 0) >= LINUX_VERSION_CODE)
 #define NUM_NL80211_BANDS IEEE80211_NUM_BANDS
 #endif
-
-#define rtw_band_to_nl80211_band(band) \
-	(band == BAND_ON_2_4G) ? NL80211_BAND_2GHZ : \
-	(band == BAND_ON_5G) ? NL80211_BAND_5GHZ : NUM_NL80211_BANDS
 
 #include "rtw_cfgvendor.h"
 

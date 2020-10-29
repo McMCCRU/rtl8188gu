@@ -12,19 +12,49 @@
  * more details.
  *
  *****************************************************************************/
-#ifndef	__MLME_OSDEP_H_
-#define __MLME_OSDEP_H_
+
+#ifndef __HALRF_PSD_H__
+#define __HALRF_PSD_H__
+
+#if (DM_ODM_SUPPORT_TYPE & ODM_WIN)
+
+struct _halrf_psd_data {
+	u32		point;
+	u32		start_point;
+	u32		stop_point;
+	u32		average;
+	u32		buf_size;
+	u32		psd_data[256];
+	u32		psd_progress;
+};
 
 
-#if defined(PLATFORM_WINDOWS) || defined(PLATFORM_MPIXEL)
-	extern int time_after(systime now, systime old);
-#endif
 
-extern void rtw_os_indicate_disconnect(_adapter *adapter, u16 reason, u8 locally_generated);
-extern void rtw_os_indicate_connect(_adapter *adapter);
-void rtw_os_indicate_scan_done(_adapter *padapter, bool aborted);
-extern void rtw_report_sec_ie(_adapter *adapter, u8 authmode, u8 *sec_ie);
+enum rt_status
+halrf_psd_init (
+		void	*p_dm_void
+	);
 
-void rtw_reset_securitypriv(_adapter *adapter);
 
-#endif /* _MLME_OSDEP_H_ */
+
+enum rt_status
+halrf_psd_query (
+	void	*p_dm_void,
+	u32		*outbuf,
+	u32		buf_size
+);
+
+enum rt_status
+halrf_psd_init_query(
+	void	*p_dm_void,
+	u32		*outbuf,
+	u32		point,
+	u32		start_point,
+	u32		stop_point,
+	u32		average,
+	u32		buf_size
+);
+
+#endif	/*#if (DM_ODM_SUPPORT_TYPE & ODM_WIN)*/
+#endif	/*#ifndef __HALRF_PSD_H__*/
+

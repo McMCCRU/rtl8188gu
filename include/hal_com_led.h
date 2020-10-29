@@ -364,11 +364,7 @@ struct led_priv {
 			(adapter)->ledpriv.SwLedOff((adapter), (pLed)); \
 	} while (0)
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 void BlinkTimerCallback(void *data);
-#else
-void BlinkTimerCallback(struct timer_list *t);
-#endif
 void BlinkWorkItemCallback(_workitem *work);
 
 void ResetLedStatus(PLED_DATA pLed);
@@ -390,11 +386,15 @@ extern void BlinkHandler(PLED_DATA	pLed);
 #endif /* CONFIG_RTW_LED */
 
 #if defined(CONFIG_RTW_LED) && defined(CONFIG_RTW_SW_LED)
+#ifdef CONFIG_LED_CONTROL
+void rtw_led_control(_adapter *adapter, LED_CTL_MODE LedAction);
+#else
 #define rtw_led_control(adapter, LedAction) \
 	do { \
 		if ((adapter)->ledpriv.LedControlHandler) \
 			(adapter)->ledpriv.LedControlHandler((adapter), (LedAction)); \
 	} while (0)
+#endif //CONFIG_LED_CONTROL
 #else
 #define rtw_led_control(adapter, LedAction) do {} while (0)
 #endif

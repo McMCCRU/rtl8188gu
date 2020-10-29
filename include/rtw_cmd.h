@@ -381,11 +381,6 @@ struct sitesurvey_parm {
 	u8 ch_num;
 	NDIS_802_11_SSID ssid[RTW_SSID_SCAN_AMOUNT];
 	struct rtw_ieee80211_channel ch[RTW_CHANNEL_SCAN_AMOUNT];
-
-	u32 token; 	/* 80211k use it to identify caller */
-	u16 duration;	/* 0: use default, otherwise: channel scan time */
-	u8 igi;		/* 0: use defalut */
-	u8 bw;		/* 0: use default */
 };
 
 /*
@@ -1002,8 +997,8 @@ Result:
 
 extern u8 rtw_setassocsta_cmd(_adapter  *padapter, u8 *mac_addr);
 extern u8 rtw_setstandby_cmd(_adapter *padapter, uint action);
-void rtw_init_sitesurvey_parm(_adapter *padapter, struct sitesurvey_parm *pparm);
-u8 rtw_sitesurvey_cmd(_adapter *padapter, struct sitesurvey_parm *pparm);
+u8 rtw_sitesurvey_cmd(_adapter  *padapter, NDIS_802_11_SSID *ssid, int ssid_num, struct rtw_ieee80211_channel *ch, int ch_num);
+
 u8 rtw_create_ibss_cmd(_adapter *adapter, int flags);
 u8 rtw_startbss_cmd(_adapter *adapter, int flags);
 u8 rtw_change_bss_chbw_cmd(_adapter *adapter, int flags, s16 req_ch, s8 req_bw, s8 req_offset);
@@ -1206,7 +1201,6 @@ enum rtw_h2c_cmd {
 
 	GEN_CMD_CODE(_RunInThreadCMD), /*64*/
 	GEN_CMD_CODE(_AddBARsp) , /*65*/
-	GEN_CMD_CODE(_RM_POST_EVENT), /*66*/
 
 	MAX_H2CCMD
 };
@@ -1294,7 +1288,6 @@ struct _cmd_callback	rtw_cmd_callback[] = {
 
 	{GEN_CMD_CODE(_RunInThreadCMD), NULL},/*64*/
 	{GEN_CMD_CODE(_AddBARsp), NULL}, /*65*/
-	{GEN_CMD_CODE(_RM_POST_EVENT), NULL}, /*66*/
 };
 #endif
 

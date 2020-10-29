@@ -17,7 +17,9 @@
 #include <drv_types.h>
 #include <hal_data.h>
 #include "rtw_proc.h"
+#ifdef CONFIG_BT_COEXIST
 #include <rtw_btcoex.h>
+#endif
 
 #ifdef CONFIG_PROC_DEBUG
 
@@ -61,19 +63,12 @@ inline struct proc_dir_entry *rtw_proc_create_dir(const char *name, struct proc_
 	return entry;
 }
 
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 6, 0))
-inline struct proc_dir_entry *rtw_proc_create_entry(const char *name, struct proc_dir_entry *parent,
-	const struct proc_ops *fops, void * data)
-#else
 inline struct proc_dir_entry *rtw_proc_create_entry(const char *name, struct proc_dir_entry *parent,
 	const struct file_operations *fops, void * data)
-#endif
 {
 	struct proc_dir_entry *entry;
 
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 6, 0))
-	entry = proc_create_data(name,  S_IFREG | S_IRUGO | S_IWUGO, parent, fops, data);
-#elif (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 26))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 26))
 	entry = proc_create_data(name,  S_IFREG | S_IRUGO | S_IWUGO, parent, fops, data);
 #else
 	entry = create_proc_entry(name, S_IFREG | S_IRUGO | S_IWUGO, parent);
@@ -237,15 +232,6 @@ static ssize_t rtw_drv_proc_write(struct file *file, const char __user *buffer, 
 	return -EROFS;
 }
 
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 6, 0))
-static const struct proc_ops rtw_drv_proc_seq_fops = {
-	.proc_open	= rtw_drv_proc_open,
-	.proc_read	= seq_read,
-	.proc_lseek	= seq_lseek,
-	.proc_release	= seq_release,
-	.proc_write	= rtw_drv_proc_write,
-};
-#else
 static const struct file_operations rtw_drv_proc_seq_fops = {
 	.owner = THIS_MODULE,
 	.open = rtw_drv_proc_open,
@@ -254,17 +240,7 @@ static const struct file_operations rtw_drv_proc_seq_fops = {
 	.release = seq_release,
 	.write = rtw_drv_proc_write,
 };
-#endif
 
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 6, 0))
-static const struct proc_ops rtw_drv_proc_sseq_fops = {
-	.proc_open = rtw_drv_proc_open,
-	.proc_read = seq_read,
-	.proc_lseek = seq_lseek,
-	.proc_release = single_release,
-	.proc_write = rtw_drv_proc_write,
-};
-#else
 static const struct file_operations rtw_drv_proc_sseq_fops = {
 	.owner = THIS_MODULE,
 	.open = rtw_drv_proc_open,
@@ -273,7 +249,6 @@ static const struct file_operations rtw_drv_proc_sseq_fops = {
 	.release = single_release,
 	.write = rtw_drv_proc_write,
 };
-#endif
 
 int rtw_drv_proc_init(void)
 {
@@ -2357,23 +2332,16 @@ static int proc_get_best_chan(struct seq_file *m, void *v)
 	struct net_device *dev = m->private;
 	_adapter *adapter = (_adapter *)rtw_netdev_priv(dev);
 
-	if (IS_ACS_ENABLE(adapter))
-		rtw_acs_info_dump(m, adapter);
-	else
-		_RTW_PRINT_SEL(m,"ACS disabled\n");
+	rtw_acs_info_dump(m, adapter);
 	return 0;
 }
 
 static ssize_t proc_set_acs(struct file *file, const char __user *buffer, size_t count, loff_t *pos, void *data)
 {
-#ifdef CONFIG_RTW_ACS_DBG
 	struct net_device *dev = data;
 	_adapter *padapter = (_adapter *)rtw_netdev_priv(dev);
 	char tmp[32];
 	u8 acs_state = 0;
-	u16 scan_ch_ms= 0, acs_scan_ch_ms = 0;
-	u8 scan_type = SCAN_ACTIVE, igi= 0, bw = 0;
-	u8 acs_scan_type = SCAN_ACTIVE, acs_igi= 0, acs_bw = 0;
 
 	if (count < 1)
 		return -EFAULT;
@@ -2384,8 +2352,7 @@ static ssize_t proc_set_acs(struct file *file, const char __user *buffer, size_t
 	}
 	if (buffer && !copy_from_user(tmp, buffer, count)) {
 
-		int num = sscanf(tmp, "%hhu %hhu %hu %hhx %hhu",
-			&acs_state, &scan_type, &scan_ch_ms, &igi, &bw);
+		int num = sscanf(tmp, "%hhu", &acs_state);
 
 		if (num < 1)
 			return -EINVAL;
@@ -2394,21 +2361,8 @@ static ssize_t proc_set_acs(struct file *file, const char __user *buffer, size_t
 			rtw_acs_start(padapter);
 		else
 			rtw_acs_stop(padapter);
-		num = num -1;
 
-		if(num) {
-			if (num-- > 0)
-				acs_scan_type = scan_type;
-			if (num-- > 0)
-				acs_scan_ch_ms = scan_ch_ms;
-			if (num-- > 0)
-				acs_igi = igi;
-			if (num-- > 0)
-				acs_bw = bw;
-			rtw_acs_adv_setting(padapter, acs_scan_type, acs_scan_ch_ms, acs_igi, acs_bw);
-		}
 	}
-#endif /*CONFIG_RTW_ACS_DBG*/
 	return count;
 }
 #endif /*CONFIG_RTW_ACS*/
@@ -2627,11 +2581,9 @@ static ssize_t proc_set_napi_th(struct file *file, const char __user *buffer, si
 	struct net_device *dev = data;
 	struct _ADAPTER *adapter = (struct _ADAPTER *)rtw_netdev_priv(dev);
 	struct registry_priv *registry = &adapter->registrypriv;
-	struct dvobj_priv *dvobj = adapter_to_dvobj(adapter);
-	PADAPTER iface = NULL;
 	char tmp[32] = {0};
 	int thrshld = 0;
-	int num = 0, i = 0;
+	int num = 0;
 
 
 	if (count < 1)
@@ -2644,18 +2596,11 @@ static ssize_t proc_set_napi_th(struct file *file, const char __user *buffer, si
 
 	RTW_INFO("%s: Last threshold = %d Mbps\n", __FUNCTION__, registry->napi_threshold);
 
-
-	for (i = 0; i < dvobj->iface_nums; i++) {
-		iface = dvobj->padapters[i];
-		if (iface) {	
-			if (buffer && !copy_from_user(tmp, buffer, count)) {
-				registry = &iface->registrypriv;
-				num = sscanf(tmp, "%d", &thrshld);
-				if (num > 0) {
-					if (thrshld > 0)
-						registry->napi_threshold = thrshld;
-				}
-			}
+	if (buffer && !copy_from_user(tmp, buffer, count)) {
+		num = sscanf(tmp, "%d", &thrshld);
+		if (num > 0) {
+			if (thrshld > 0)
+				registry->napi_threshold = thrshld;
 		}
 	}
 	RTW_INFO("%s: New threshold = %d Mbps\n", __FUNCTION__, registry->napi_threshold);
@@ -2751,6 +2696,7 @@ const struct rtw_proc_hdl adapter_proc_hdls[] = {
 	RTW_PROC_HDL_SSEQ("tx_power_offset", proc_get_tx_power_offset, proc_set_tx_power_offset),
 	RTW_PROC_HDL_SSEQ("rate_ctl", proc_get_rate_ctl, proc_set_rate_ctl),
 	RTW_PROC_HDL_SSEQ("bw_ctl", proc_get_bw_ctl, proc_set_bw_ctl),
+	RTW_PROC_HDL_SSEQ("dis_pwt_ctl", proc_get_dis_pwt, proc_set_dis_pwt),
 	RTW_PROC_HDL_SSEQ("mac_qinfo", proc_get_mac_qinfo, NULL),
 	RTW_PROC_HDL_SSEQ("macid_info", proc_get_macid_info, NULL),
 	RTW_PROC_HDL_SSEQ("bcmc_info", proc_get_mi_ap_bc_info, NULL),
@@ -2926,7 +2872,7 @@ const struct rtw_proc_hdl adapter_proc_hdls[] = {
 	RTW_PROC_HDL_SSEQ("ps_info", proc_get_ps_info, NULL),
 #ifdef CONFIG_WMMPS_STA
 	RTW_PROC_HDL_SSEQ("wmmps_info", proc_get_wmmps_info, proc_set_wmmps_info),
-#endif /* CONFIG_WMMPS_STA */	
+#endif /* CONFIG_WMMPS_STA */
 #endif
 #ifdef CONFIG_TDLS
 	RTW_PROC_HDL_SSEQ("tdls_info", proc_get_tdls_info, NULL),
@@ -2997,6 +2943,10 @@ const struct rtw_proc_hdl adapter_proc_hdls[] = {
 	RTW_PROC_HDL_SSEQ("dynamic_agg_enable", proc_get_dynamic_agg_enable, proc_set_dynamic_agg_enable),
 	RTW_PROC_HDL_SSEQ("iqk_fw_offload", proc_get_iqk_fw_offload, proc_set_iqk_fw_offload),
 
+#ifdef CONFIG_LED_CONTROL
+  RTW_PROC_HDL_SSEQ("led_enable", proc_get_led_enable, proc_set_led_enable),
+#endif //CONFIG_LED_CONTROL
+
 };
 
 const int adapter_proc_hdls_num = sizeof(adapter_proc_hdls) / sizeof(struct rtw_proc_hdl);
@@ -3035,15 +2985,6 @@ static ssize_t rtw_adapter_proc_write(struct file *file, const char __user *buff
 	return -EROFS;
 }
 
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 6, 0))
-static const struct proc_ops rtw_adapter_proc_seq_fops = {
-	.proc_open = rtw_adapter_proc_open,
-	.proc_read = seq_read,
-	.proc_lseek = seq_lseek,
-	.proc_release = seq_release,
-	.proc_write = rtw_adapter_proc_write,
-};
-#else
 static const struct file_operations rtw_adapter_proc_seq_fops = {
 	.owner = THIS_MODULE,
 	.open = rtw_adapter_proc_open,
@@ -3052,17 +2993,7 @@ static const struct file_operations rtw_adapter_proc_seq_fops = {
 	.release = seq_release,
 	.write = rtw_adapter_proc_write,
 };
-#endif
 
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 6, 0))
-static const struct proc_ops rtw_adapter_proc_sseq_fops = {
-	.proc_open = rtw_adapter_proc_open,
-	.proc_read = seq_read,
-	.proc_lseek = seq_lseek,
-	.proc_release = single_release,
-	.proc_write = rtw_adapter_proc_write,
-};
-#else
 static const struct file_operations rtw_adapter_proc_sseq_fops = {
 	.owner = THIS_MODULE,
 	.open = rtw_adapter_proc_open,
@@ -3071,7 +3002,6 @@ static const struct file_operations rtw_adapter_proc_sseq_fops = {
 	.release = single_release,
 	.write = rtw_adapter_proc_write,
 };
-#endif
 
 int proc_get_odm_adaptivity(struct seq_file *m, void *v)
 {
@@ -3227,15 +3157,6 @@ static ssize_t rtw_odm_proc_write(struct file *file, const char __user *buffer, 
 	return -EROFS;
 }
 
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 6, 0))
-static const struct proc_ops rtw_odm_proc_seq_fops = {
-	.proc_open = rtw_odm_proc_open,
-	.proc_read = seq_read,
-	.proc_lseek = seq_lseek,
-	.proc_release = seq_release,
-	.proc_write = rtw_odm_proc_write,
-};
-#else
 static const struct file_operations rtw_odm_proc_seq_fops = {
 	.owner = THIS_MODULE,
 	.open = rtw_odm_proc_open,
@@ -3244,17 +3165,7 @@ static const struct file_operations rtw_odm_proc_seq_fops = {
 	.release = seq_release,
 	.write = rtw_odm_proc_write,
 };
-#endif
 
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 6, 0))
-static const struct proc_ops rtw_odm_proc_sseq_fops = {
-	.proc_open = rtw_odm_proc_open,
-	.proc_read = seq_read,
-	.proc_lseek = seq_lseek,
-	.proc_release = single_release,
-	.proc_write = rtw_odm_proc_write,
-};
-#else
 static const struct file_operations rtw_odm_proc_sseq_fops = {
 	.owner = THIS_MODULE,
 	.open = rtw_odm_proc_open,
@@ -3263,7 +3174,6 @@ static const struct file_operations rtw_odm_proc_sseq_fops = {
 	.release = single_release,
 	.write = rtw_odm_proc_write,
 };
-#endif
 
 struct proc_dir_entry *rtw_odm_proc_init(struct net_device *dev)
 {

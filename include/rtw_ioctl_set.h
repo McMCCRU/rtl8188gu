@@ -51,7 +51,7 @@ u8 rtw_set_802_11_authentication_mode(_adapter *pdapter, NDIS_802_11_AUTHENTICAT
 u8 rtw_set_802_11_bssid(_adapter *padapter, u8 *bssid);
 u8 rtw_set_802_11_add_wep(_adapter *padapter, NDIS_802_11_WEP *wep);
 u8 rtw_set_802_11_disassociate(_adapter *padapter);
-u8 rtw_set_802_11_bssid_list_scan(_adapter *padapter, struct sitesurvey_parm *pparm);
+u8 rtw_set_802_11_bssid_list_scan(_adapter *padapter, NDIS_802_11_SSID *pssid, int ssid_max_num, struct rtw_ieee80211_channel *ch, int ch_num);
 u8 rtw_set_802_11_infrastructure_mode(_adapter *padapter, NDIS_802_11_NETWORK_INFRASTRUCTURE networktype);
 u8 rtw_set_802_11_remove_wep(_adapter *padapter, u32 keyindex);
 u8 rtw_set_802_11_ssid(_adapter *padapter, NDIS_802_11_SSID *ssid);

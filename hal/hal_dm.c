@@ -83,7 +83,7 @@ void rtw_hal_update_iqk_fw_offload_cap(_adapter *adapter)
 void rtw_phydm_iqk_trigger(_adapter *adapter)
 {
 	struct PHY_DM_STRUCT *p_dm_odm = adapter_to_phydm(adapter);
-	u8 clear = _TRUE;
+	u8 clear = _FALSE;
 	u8 segment = _FALSE;
 	u8 rfk_forbidden = _FALSE;
 
@@ -683,7 +683,7 @@ void SetHalODMVar(
 #ifdef CONFIG_ANTENNA_DIVERSITY
 	case HAL_ODM_ANTDIV_SELECT: {
 		u8	antenna = (*(u8 *)pValue1);
-		HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
+
 		/*switch antenna*/
 		odm_update_rx_idle_ant(&pHalData->odmpriv, antenna);
 		/*RTW_INFO("==> HAL_ODM_ANTDIV_SELECT, Ant_(%s)\n", (antenna == MAIN_ANT) ? "MAIN_ANT" : "AUX_ANT");*/
@@ -964,29 +964,29 @@ void dump_sta_info(void *sel, struct sta_info *psta)
 
 	ra_info = &psta->cmn.ra_info;
 
-	RTW_PRINT_SEL(sel, "============ STA [" MAC_FMT "]  ===================\n",
+	_RTW_PRINT_SEL(sel, "============ STA [" MAC_FMT "]  ===================\n",
 		MAC_ARG(psta->cmn.mac_addr));
-	RTW_PRINT_SEL(sel, "mac_id : %d\n", psta->cmn.mac_id);
-	RTW_PRINT_SEL(sel, "wireless_mode : 0x%02x\n", psta->wireless_mode);
-	RTW_PRINT_SEL(sel, "mimo_type : %d\n", psta->cmn.mimo_type);
-	RTW_PRINT_SEL(sel, "bw_mode : %s, ra_bw_mode : %s\n",
+	_RTW_PRINT_SEL(sel, "mac_id : %d\n", psta->cmn.mac_id);
+	_RTW_PRINT_SEL(sel, "wireless_mode : 0x%02x\n", psta->wireless_mode);
+	_RTW_PRINT_SEL(sel, "mimo_type : %d\n", psta->cmn.mimo_type);
+	_RTW_PRINT_SEL(sel, "bw_mode : %s, ra_bw_mode : %s\n",
 			ch_width_str(psta->cmn.bw_mode), ch_width_str(ra_info->ra_bw_mode));
-	RTW_PRINT_SEL(sel, "rate_id : %d\n", ra_info->rate_id);
-	RTW_PRINT_SEL(sel, "rssi : %d (%%), rssi_level : %d\n", psta->cmn.rssi_stat.rssi, ra_info->rssi_level);
-	RTW_PRINT_SEL(sel, "is_support_sgi : %s, is_vht_enable : %s\n",
+	_RTW_PRINT_SEL(sel, "rate_id : %d\n", ra_info->rate_id);
+	_RTW_PRINT_SEL(sel, "rssi : %d (%%), rssi_level : %d\n", psta->cmn.rssi_stat.rssi, ra_info->rssi_level);
+	_RTW_PRINT_SEL(sel, "is_support_sgi : %s, is_vht_enable : %s\n",
 			(ra_info->is_support_sgi) ? "Y" : "N", (ra_info->is_vht_enable) ? "Y" : "N");
-	RTW_PRINT_SEL(sel, "disable_ra : %s, disable_pt : %s\n",
+	_RTW_PRINT_SEL(sel, "disable_ra : %s, disable_pt : %s\n",
 				(ra_info->disable_ra) ? "Y" : "N", (ra_info->disable_pt) ? "Y" : "N");
-	RTW_PRINT_SEL(sel, "is_noisy : %s\n", (ra_info->is_noisy) ? "Y" : "N");
-	RTW_PRINT_SEL(sel, "txrx_state : %d\n", ra_info->txrx_state);/*0: uplink, 1:downlink, 2:bi-direction*/
+	_RTW_PRINT_SEL(sel, "is_noisy : %s\n", (ra_info->is_noisy) ? "Y" : "N");
+	_RTW_PRINT_SEL(sel, "txrx_state : %d\n", ra_info->txrx_state);/*0: uplink, 1:downlink, 2:bi-direction*/
 
 	curr_tx_sgi = (ra_info->curr_tx_rate & 0x80) ? _TRUE : _FALSE;
 	curr_tx_rate = ra_info->curr_tx_rate & 0x7F;
-	RTW_PRINT_SEL(sel, "curr_tx_rate : %s (%s)\n",
+	_RTW_PRINT_SEL(sel, "curr_tx_rate : %s (%s)\n",
 			HDATA_RATE(curr_tx_rate), (curr_tx_sgi) ? "S" : "L");
-	RTW_PRINT_SEL(sel, "curr_tx_bw : %s\n", ch_width_str(ra_info->curr_tx_bw));
-	RTW_PRINT_SEL(sel, "curr_retry_ratio : %d\n", ra_info->curr_retry_ratio);
-	RTW_PRINT_SEL(sel, "ra_mask : 0x%016llx\n\n", ra_info->ramask);
+	_RTW_PRINT_SEL(sel, "curr_tx_bw : %s\n", ch_width_str(ra_info->curr_tx_bw));
+	_RTW_PRINT_SEL(sel, "curr_retry_ratio : %d\n", ra_info->curr_retry_ratio);
+	_RTW_PRINT_SEL(sel, "ra_mask : 0x%016llx\n", ra_info->ramask);
 }
 
 void rtw_phydm_ra_registed(_adapter *adapter, struct sta_info *psta)
@@ -1125,6 +1125,8 @@ void rtw_phydm_watchdog(_adapter *adapter)
 #endif /* CONFIG_BT_COEXIST */
 	odm_cmn_info_update(&pHalData->odmpriv, ODM_CMNINFO_BT_ENABLED,
 							(bBtDisabled == _TRUE) ? _FALSE : _TRUE);
+	odm_cmn_info_update(&pHalData->odmpriv, ODM_CMNINFO_POWER_TRAINING,
+							(pHalData->bDisableTXPowerTraining) ? _TRUE : _FALSE);
 #ifdef CONFIG_LPS_PG
 	_lps_pg_state_update(adapter);
 #endif

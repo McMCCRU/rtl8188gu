@@ -833,17 +833,10 @@ static void hal_read_efuse_8710b(PADAPTER padapter, u8 efuseType,u16 _offset,u16
 		}
 	}
 
-//RTW_INFO("Peter : read EFUSE end,dump :\n");
-
 	/* Copy from Efuse map to output pointer memory!!! */
 	for (i = 0; i < _size_byte; i++) {
 		pbuf[i] = efuseTbl[_offset + i];
-//		printk(" %02x", efuseTbl[_offset + i]);
-//		if((i+1)% 16 == 0)
-//			printk("\n");
 	}
-//RTW_INFO("Peter : Dump end\n");
-
 
 	/* Calculate Efuse utilization */
 	total = 0;
@@ -1577,8 +1570,8 @@ BOOLEAN hal_efuse_write4(PADAPTER padapter, u16 offset, u8 value)
 		RT_TRACE(COMP_EFUSE, DBG_SERIOUS, ("Hal_EfuseOneByteWrite_8710B() Error: Polling 0x6c[31] fail, 0x6c = 0x%x\n",u4Temp));
 		bRetVaule = FALSE;
 	}
-	
-	return bRetVaule;	
+
+	return bRetVaule;
 }
 #endif
 
@@ -2099,9 +2092,10 @@ void init_hal_spec_8710b(_adapter *adapter)
 			    | WL_FUNC_MIRACAST
 			    | WL_FUNC_TDLS
 			    ;
-
+#if 0
 	rtw_macid_ctl_init_sleep_reg(adapter_to_macidctl(adapter)
 		, REG_MACID_SLEEP, 0, 0, 0);
+#endif
 }
 
 void rtl8710b_init_default_value(PADAPTER padapter)
@@ -4434,7 +4428,7 @@ void rtl8710b_set_hal_ops(struct hal_ops *pHalFunc)
 	pHalFunc->write_rfreg = &PHY_SetRFReg_8710B;
 	pHalFunc->read_syson_reg = &hal_query_syson_reg_8710b;
 	pHalFunc->write_syson_reg = &hal_set_syson_reg_8710b;
-	pHalFunc->read_wmmedca_reg = &rtl8710b_read_wmmedca_reg;
+//	pHalFunc->read_wmmedca_reg = &rtl8710b_read_wmmedca_reg;
 
 	/* Efuse related function */
 	pHalFunc->ReadEFuse = &hal_read_efuse_8710b;

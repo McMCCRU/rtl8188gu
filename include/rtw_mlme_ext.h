@@ -125,8 +125,6 @@ typedef enum _RT_CHANNEL_DOMAIN {
 	RTW_CHPLAN_WORLD_FCC2 = 0x29,
 	RTW_CHPLAN_FCC2_NULL = 0x2A,
 	RTW_CHPLAN_IC1_IC2 = 0x2B,
-	RTW_CHPLAN_MKK2_NULL = 0x2C,
-	RTW_CHPLAN_WORLD_CHILE1= 0x2D,
 	RTW_CHPLAN_WORLD_FCC3 = 0x30,
 	RTW_CHPLAN_WORLD_FCC4 = 0x31,
 	RTW_CHPLAN_WORLD_FCC5 = 0x32,
@@ -142,7 +140,7 @@ typedef enum _RT_CHANNEL_DOMAIN {
 	RTW_CHPLAN_ETSI1_ETSI4 = 0x42,
 	RTW_CHPLAN_FCC1_FCC2 = 0x43,
 	RTW_CHPLAN_FCC1_NCC3 = 0x44,
-	RTW_CHPLAN_WORLD_ACMA1 = 0x45,
+	RTW_CHPLAN_WORLD_ETSI5 = 0x45,
 	RTW_CHPLAN_FCC1_FCC8 = 0x46,
 	RTW_CHPLAN_WORLD_ETSI6 = 0x47,
 	RTW_CHPLAN_WORLD_ETSI7 = 0x48,
@@ -188,6 +186,84 @@ typedef enum _RT_CHANNEL_DOMAIN {
 	RTW_CHPLAN_REALTEK_DEFINE = 0x7F,
 	RTW_CHPLAN_UNSPECIFIED = 0xFF,
 } RT_CHANNEL_DOMAIN, *PRT_CHANNEL_DOMAIN;
+
+typedef enum _RT_CHANNEL_DOMAIN_2G {
+	RTW_RD_2G_NULL = 0,
+	RTW_RD_2G_WORLD = 1,	/* Worldwird 13 */
+	RTW_RD_2G_ETSI1 = 2,	/* Europe */
+	RTW_RD_2G_FCC1 = 3,		/* US */
+	RTW_RD_2G_MKK1 = 4,		/* Japan */
+	RTW_RD_2G_ETSI2 = 5,	/* France */
+	RTW_RD_2G_GLOBAL = 6,	/* Global domain */
+	RTW_RD_2G_MKK2 = 7,		/* Japan */
+	RTW_RD_2G_FCC2 = 8,		/* US */
+	RTW_RD_2G_IC1 = 9,		/* Canada */
+
+	RTW_RD_2G_MAX,
+} RT_CHANNEL_DOMAIN_2G, *PRT_CHANNEL_DOMAIN_2G;
+
+typedef enum _RT_CHANNEL_DOMAIN_5G {
+	RTW_RD_5G_NULL = 0,		/*	*/
+	RTW_RD_5G_ETSI1 = 1,	/* Europe */
+	RTW_RD_5G_ETSI2 = 2,	/* Australia, New Zealand */
+	RTW_RD_5G_ETSI3 = 3,	/* Russia */
+	RTW_RD_5G_FCC1 = 4,		/* US */
+	RTW_RD_5G_FCC2 = 5,		/* FCC w/o DFS Channels */
+	RTW_RD_5G_FCC3 = 6,		/* Bolivia, Chile, El Salvador, Venezuela */
+	RTW_RD_5G_FCC4 = 7,		/* Venezuela */
+	RTW_RD_5G_FCC5 = 8,		/* China */
+	RTW_RD_5G_FCC6 = 9,		/*	*/
+	RTW_RD_5G_FCC7 = 10,	/* US(w/o Weather radar) */
+	RTW_RD_5G_IC1 = 11,		/* Canada(w/o Weather radar) */
+	RTW_RD_5G_KCC1 = 12,	/* Korea */
+	RTW_RD_5G_MKK1 = 13,	/* Japan */
+	RTW_RD_5G_MKK2 = 14,	/* Japan (W52, W53) */
+	RTW_RD_5G_MKK3 = 15,	/* Japan (W56) */
+	RTW_RD_5G_NCC1 = 16,	/* Taiwan, (w/o Weather radar) */
+	RTW_RD_5G_NCC2 = 17,	/* Taiwan, Band2, Band4 */
+	RTW_RD_5G_NCC3 = 18,	/* Taiwan w/o DFS, Band4 only */
+	RTW_RD_5G_ETSI4 = 19,	/* Europe w/o DFS, Band1 only */
+	RTW_RD_5G_ETSI5 = 20,	/* Australia, New Zealand(w/o Weather radar) */
+	RTW_RD_5G_FCC8 = 21,	/* Latin America */
+	RTW_RD_5G_ETSI6 = 22,	/* Israel, Bahrain, Egypt, India, China, Malaysia */
+	RTW_RD_5G_ETSI7 = 23,	/* China */
+	RTW_RD_5G_ETSI8 = 24,	/* Jordan */
+	RTW_RD_5G_ETSI9 = 25,	/* Lebanon */
+	RTW_RD_5G_ETSI10 = 26,	/* Qatar */
+	RTW_RD_5G_ETSI11 = 27,	/* Russia */
+	RTW_RD_5G_NCC4 = 28,	/* Taiwan, (w/o Weather radar) */
+	RTW_RD_5G_ETSI12 = 29,	/* Indonesia */
+	RTW_RD_5G_FCC9 = 30,	/* (w/o Weather radar) */
+	RTW_RD_5G_ETSI13 = 31,	/* (w/o Weather radar) */
+	RTW_RD_5G_FCC10 = 32,	/* Argentina(w/o Weather radar) */
+	RTW_RD_5G_MKK4 = 33,	/* Japan (W52) */
+	RTW_RD_5G_ETSI14 = 34,	/* Russia */
+	RTW_RD_5G_FCC11 = 35,	/* US(include CH144) */
+	RTW_RD_5G_ETSI15 = 36,	/* Malaysia */
+	RTW_RD_5G_MKK5 = 37,	/* Japan */
+	RTW_RD_5G_ETSI16 = 38,	/* Europe */
+	RTW_RD_5G_ETSI17 = 39,	/* Europe */
+	RTW_RD_5G_FCC12 = 40,	/* FCC */
+	RTW_RD_5G_FCC13 = 41,	/* FCC */
+	RTW_RD_5G_FCC14 = 42,	/* FCC w/o Weather radar(w/o 5600~5650MHz) */
+	RTW_RD_5G_FCC15 = 43,	/* FCC w/o Band3 */
+	RTW_RD_5G_FCC16 = 44,	/* FCC w/o Band3 */
+	RTW_RD_5G_ETSI18 = 45,	/* ETSI w/o DFS Band2&3 */
+	RTW_RD_5G_ETSI19 = 46,	/* Europe */
+	RTW_RD_5G_FCC17 = 47,	/* FCC w/o Weather radar(w/o 5600~5650MHz) */
+	RTW_RD_5G_ETSI20 = 48,	/* Europe */
+	RTW_RD_5G_IC2 = 49,		/* Canada(w/o Weather radar), include ch144 */
+	RTW_RD_5G_ETSI21 = 50,	/* Australia, New Zealand(w/o Weather radar) */
+	RTW_RD_5G_FCC18 = 51,	/*  */
+	RTW_RD_5G_WORLD = 52,	/* Worldwide */
+
+	/* === Below are driver defined for legacy channel plan compatible, DON'T assign index ==== */
+	RTW_RD_5G_OLD_FCC1,
+	RTW_RD_5G_OLD_NCC1,
+	RTW_RD_5G_OLD_KCC1,
+
+	RTW_RD_5G_MAX,
+} RT_CHANNEL_DOMAIN_5G, *PRT_CHANNEL_DOMAIN_5G;
 
 bool rtw_chplan_is_empty(u8 id);
 #define rtw_is_channel_plan_valid(chplan) (((chplan) < RTW_CHPLAN_MAX || (chplan) == RTW_CHPLAN_REALTEK_DEFINE) && !rtw_chplan_is_empty(chplan))
@@ -312,7 +388,6 @@ struct ss_res {
 #endif
 	int	scan_mode;
 	u16 scan_ch_ms;
-	u32 scan_timeout_ms;
 	u8 rx_ampdu_accept;
 	u8 rx_ampdu_size;
 	u8 igi_scan;
@@ -333,11 +408,6 @@ struct ss_res {
 	u8 ch_num;
 	NDIS_802_11_SSID ssid[RTW_SSID_SCAN_AMOUNT];
 	struct rtw_ieee80211_channel ch[RTW_CHANNEL_SCAN_AMOUNT];
-
-	u32 token; 	/* 0: use to identify caller */
-	u16 duration;	/* 0: use default */
-	u8 igi;		/* 0: use defalut */
-	u8 bw;		/* 0: use default */
 };
 
 /* #define AP_MODE				0x0C */
@@ -493,7 +563,7 @@ void rtw_rfctl_deinit(_adapter *adapter);
 
 #ifdef CONFIG_DFS_MASTER
 struct rf_ctl_t;
-#define CH_IS_NON_OCP(rt_ch_info) (rtw_time_after((rt_ch_info)->non_ocp_end_time, rtw_get_current_time()))
+#define CH_IS_NON_OCP(rt_ch_info) (time_after((rt_ch_info)->non_ocp_end_time, rtw_get_current_time()))
 bool rtw_is_cac_reset_needed(_adapter *adapter, u8 ch, u8 bw, u8 offset);
 bool _rtw_rfctl_overlap_radar_detect_ch(struct rf_ctl_t *rfctl, u8 ch, u8 bw, u8 offset);
 bool rtw_rfctl_overlap_radar_detect_ch(struct rf_ctl_t *rfctl);
@@ -584,7 +654,9 @@ struct mlme_ext_priv {
 	u16	mgnt_seq;
 #ifdef CONFIG_IEEE80211W
 	u16	sa_query_seq;
-#endif
+	u64 mgnt_80211w_IPN;
+	u64 mgnt_80211w_IPN_rx;
+#endif /* CONFIG_IEEE80211W */
 	/* struct fw_priv 	fwpriv; */
 
 	unsigned char	cur_channel;
@@ -711,7 +783,6 @@ static inline u8 check_mlmeinfo_state(struct mlme_ext_priv *plmeext, sint state)
 #define mlmeext_chk_scan_backop_flags_ap(mlmeext, flags) (0)
 #define mlmeext_assign_scan_backop_flags_ap(mlmeext, flags) do {} while (0)
 #endif
-u32 rtw_scan_timeout_decision(_adapter *padapter);
 
 void init_mlme_default_rate_set(_adapter *padapter);
 int init_mlme_ext_priv(_adapter *padapter);
@@ -866,17 +937,10 @@ void rtw_macid_ctl_set_bw(struct macid_ctl_t *macid_ctl, u8 id, u8 bw);
 void rtw_macid_ctl_set_vht_en(struct macid_ctl_t *macid_ctl, u8 id, u8 en);
 void rtw_macid_ctl_set_rate_bmp0(struct macid_ctl_t *macid_ctl, u8 id, u32 bmp);
 void rtw_macid_ctl_set_rate_bmp1(struct macid_ctl_t *macid_ctl, u8 id, u32 bmp);
-void rtw_macid_ctl_init_sleep_reg(struct macid_ctl_t *macid_ctl, u16 m0, u16 m1, u16 m2, u16 m3);
 void rtw_macid_ctl_init(struct macid_ctl_t *macid_ctl);
 void rtw_macid_ctl_deinit(struct macid_ctl_t *macid_ctl);
 u8 rtw_iface_bcmc_id_get(_adapter *padapter);
 void rtw_iface_bcmc_id_set(_adapter *padapter, u8 mac_id);
-
-bool rtw_tim_map_is_set(_adapter *padapter, u8 *map, u8 id);
-void rtw_tim_map_set(_adapter *padapter, u8 *map, u8 id);
-void rtw_tim_map_clear(_adapter *padapter, u8 *map, u8 id);
-bool rtw_tim_map_anyone_be_set(_adapter *padapter, u8 *map);
-bool rtw_tim_map_anyone_be_set_exclude_aid0(_adapter *padapter, u8 *map);
 
 u32 report_join_res(_adapter *padapter, int res);
 void report_survey_event(_adapter *padapter, union recv_frame *precv_frame);
@@ -919,6 +983,7 @@ void issue_auth(_adapter *padapter, struct sta_info *psta, unsigned short status
 void issue_probereq(_adapter *padapter, NDIS_802_11_SSID *pssid, u8 *da);
 s32 issue_probereq_ex(_adapter *padapter, NDIS_802_11_SSID *pssid, u8 *da, u8 ch, bool append_wps, int try_cnt, int wait_ms);
 int issue_nulldata(_adapter *padapter, unsigned char *da, unsigned int power_mode, int try_cnt, int wait_ms);
+s32 issue_nulldata_in_interrupt(PADAPTER padapter, u8 *da, unsigned int power_mode);
 int issue_qos_nulldata(_adapter *padapter, unsigned char *da, u16 tid, int try_cnt, int wait_ms);
 int issue_deauth(_adapter *padapter, unsigned char *da, unsigned short reason);
 int issue_deauth_ex(_adapter *padapter, u8 *da, unsigned short reason, int try_cnt, int wait_ms);
@@ -992,7 +1057,6 @@ unsigned int OnAction_ht(_adapter *padapter, union recv_frame *precv_frame);
 #ifdef CONFIG_IEEE80211W
 unsigned int OnAction_sa_query(_adapter *padapter, union recv_frame *precv_frame);
 #endif /* CONFIG_IEEE80211W */
-unsigned int on_action_rm(_adapter *padapter, union recv_frame *precv_frame);
 unsigned int OnAction_wmm(_adapter *padapter, union recv_frame *precv_frame);
 unsigned int OnAction_vht(_adapter *padapter, union recv_frame *precv_frame);
 unsigned int OnAction_p2p(_adapter *padapter, union recv_frame *precv_frame);
@@ -1002,16 +1066,8 @@ void start_clnt_ft_action(_adapter *padapter, u8 *pTargetAddr);
 void issue_action_ft_request(_adapter *padapter, u8 *pTargetAddr);
 void report_ft_event(_adapter *padapter);
 void report_ft_reassoc_event(_adapter *padapter, u8 *pMacAddr);
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 9)
 void ft_link_timer_hdl(void *ctx);
-#else
-void ft_link_timer_hdl(struct timer_list *t);
-#endif
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 9)
 void ft_roam_timer_hdl(void *ctx);
-#else
-void ft_roam_timer_hdl(struct timer_list *t);
-#endif
 #endif
 void mlmeext_joinbss_event_callback(_adapter *padapter, int join_res);
 void mlmeext_sta_del_event_callback(_adapter *padapter);
@@ -1021,28 +1077,12 @@ void linked_status_chk(_adapter *padapter, u8 from_timer);
 
 void _linked_info_dump(_adapter *padapter);
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 9)
 void survey_timer_hdl(void *ctx);
-#else
-void survey_timer_hdl(struct timer_list *t);
-#endif
 #ifdef CONFIG_RTW_REPEATER_SON
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 9)
 void rson_timer_hdl(void *ctx);
-#else
-void rson_timer_hdl(struct timer_list *t);
 #endif
-#endif
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 9)
 void link_timer_hdl(void *ctx);
-#else
-void link_timer_hdl(struct timer_list *t);
-#endif
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 void addba_timer_hdl(void *ctx);
-#else
-void addba_timer_hdl(struct timer_list *t);
-#endif
 #ifdef CONFIG_IEEE80211W
 void sa_query_timer_hdl(void *ctx);
 #endif /* CONFIG_IEEE80211W */
@@ -1089,8 +1129,6 @@ struct cmd_hdl {
 	u8(*h2cfuns)(struct _ADAPTER *padapter, u8 *pbuf);
 };
 
-void rtw_leave_opch(_adapter *adapter);
-void rtw_back_opch(_adapter *adapter);
 
 u8 read_macreg_hdl(_adapter *padapter, u8 *pbuf);
 u8 write_macreg_hdl(_adapter *padapter, u8 *pbuf);
@@ -1203,7 +1241,6 @@ struct cmd_hdl wlancmds[] = {
 	GEN_MLME_EXT_HANDLER(0, chk_bmc_sleepq_hdl) /*63*/
 	GEN_MLME_EXT_HANDLER(sizeof(struct RunInThread_param), run_in_thread_hdl) /*64*/
 	GEN_MLME_EXT_HANDLER(sizeof(struct addBaRsp_parm), add_ba_rsp_hdl) /* 65 */
-	GEN_MLME_EXT_HANDLER(sizeof(struct rm_event), rm_post_event_hdl) /* 66 */
 };
 
 #endif

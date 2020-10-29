@@ -127,24 +127,24 @@ struct security_priv {
 
 	/* WEP */
 	u32	  dot11PrivacyKeyIndex;	/* this is only valid for legendary wep, 0~3 for key id. (tx key index) */
-	union Keytype dot11DefKey[6];			/* this is only valid for def. key	 */
-	u32	dot11DefKeylen[6];
-	u8	dot11Def_camid[6];
+	union Keytype dot11DefKey[4];			/* this is only valid for def. key	 */
+	u32	dot11DefKeylen[4];
+	u8	dot11Def_camid[4];
 	u8 	key_mask; /* use to restore wep key after hal_init */
 
 	u32 dot118021XGrpPrivacy;	/* This specify the privacy algthm. used for Grp key */
 	u32	dot118021XGrpKeyid;		/* key id used for Grp Key ( tx key index) */
-	union Keytype	dot118021XGrpKey[6];	/* 802.1x Group Key, for inx0 and inx1	 */
-	union Keytype	dot118021XGrptxmickey[6];
-	union Keytype	dot118021XGrprxmickey[6];
+	union Keytype	dot118021XGrpKey[4];	/* 802.1x Group Key, for inx0 and inx1	 */
+	union Keytype	dot118021XGrptxmickey[4];
+	union Keytype	dot118021XGrprxmickey[4];
 	union pn48		dot11Grptxpn;			/* PN48 used for Grp Key xmit. */
 	union pn48		dot11Grprxpn;			/* PN48 used for Grp Key recv. */
 	u8				iv_seq[4][8];
 #ifdef CONFIG_IEEE80211W
 	u32	dot11wBIPKeyid;						/* key id used for BIP Key ( tx key index) */
 	union Keytype	dot11wBIPKey[6];		/* BIP Key, for index4 and index5 */
-	union pn48		dot11wBIPtxpn;			/* PN48 used for BIP xmit. */
-	union pn48		dot11wBIPrxpn;			/* PN48 used for BIP recv. */
+	union pn48		dot11wBIPtxpn;			/* PN48 used for Grp Key xmit. */
+	union pn48		dot11wBIPrxpn;			/* PN48 used for Grp Key recv. */
 #endif /* CONFIG_IEEE80211W */
 #ifdef CONFIG_AP_MODE
 	/* extend security capabilities for AP_MODE */
@@ -154,7 +154,6 @@ struct security_priv {
 	unsigned int wpa2_group_cipher;
 	unsigned int wpa_pairwise_cipher;
 	unsigned int wpa2_pairwise_cipher;
-	u8 mfp_opt;
 #endif
 #ifdef CONFIG_CONCURRENT_MODE
 	u8	dot118021x_bmc_cam_id;
@@ -243,12 +242,6 @@ struct security_priv {
 	u64 aes_sw_dec_cnt_uc;
 #endif /* DBG_SW_SEC_CNT */
 };
-
-#ifdef CONFIG_IEEE80211W
-#define SEC_IS_BIP_KEY_INSTALLED(sec) ((sec)->binstallBIPkey)
-#else
-#define SEC_IS_BIP_KEY_INSTALLED(sec) _FALSE
-#endif
 
 struct sha256_state {
 	u64 length;
@@ -445,7 +438,7 @@ static const unsigned long K[64] = {
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))
 #endif
 #ifdef CONFIG_IEEE80211W
-int omac1_aes_128(const u8 *key, const u8 *data, size_t data_len, u8 *mac);
+int omac1_aes_128(u8 *key, u8 *data, size_t data_len, u8 *mac);
 #endif /* CONFIG_IEEE80211W */
 void rtw_secmicsetkey(struct mic_data *pmicdata, u8 *key);
 void rtw_secmicappendbyte(struct mic_data *pmicdata, u8 b);
@@ -468,9 +461,8 @@ u32 rtw_aes_decrypt(_adapter *padapter, u8  *precvframe);
 u32 rtw_tkip_decrypt(_adapter *padapter, u8  *precvframe);
 void rtw_wep_decrypt(_adapter *padapter, u8  *precvframe);
 #ifdef CONFIG_IEEE80211W
-u32	rtw_BIP_verify(_adapter *padapter, u8 *whdr_pos, sint flen
-	, const u8 *key, u16 id, u64* ipn);
-#endif
+u32	rtw_BIP_verify(_adapter *padapter, u8 *precvframe);
+#endif /* CONFIG_IEEE80211W */
 #ifdef CONFIG_TDLS
 void wpa_tdls_generate_tpk(_adapter *padapter, PVOID sta);
 int wpa_tdls_ftie_mic(u8 *kck, u8 trans_seq,

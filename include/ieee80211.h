@@ -631,7 +631,6 @@ struct ieee80211_snap_hdr {
 #define WLAN_REASON_CLASS3_FRAME_FROM_NONASSOC_STA 7
 #define WLAN_REASON_DISASSOC_STA_HAS_LEFT 8
 #define WLAN_REASON_STA_REQ_ASSOC_WITHOUT_AUTH 9
-#define WLAN_REASON_SA_QUERY_TIMEOUT 65532
 #define WLAN_REASON_ACTIVE_ROAM 65533
 #define WLAN_REASON_JOIN_WRONG_CHANNEL       65534
 #define WLAN_REASON_EXPIRATION_CHK 65535
@@ -1538,33 +1537,18 @@ enum rtw_ieee80211_category {
 	RTW_WLAN_CATEGORY_DLS = 2,
 	RTW_WLAN_CATEGORY_BACK = 3,
 	RTW_WLAN_CATEGORY_PUBLIC = 4, /* IEEE 802.11 public action frames */
-	RTW_WLAN_CATEGORY_RADIO_MEAS = 5,
+	RTW_WLAN_CATEGORY_RADIO_MEASUREMENT  = 5,
 	RTW_WLAN_CATEGORY_FT = 6,
 	RTW_WLAN_CATEGORY_HT = 7,
 	RTW_WLAN_CATEGORY_SA_QUERY = 8,
 	RTW_WLAN_CATEGORY_WNM = 10,
 	RTW_WLAN_CATEGORY_UNPROTECTED_WNM = 11, /* add for CONFIG_IEEE80211W, none 11w also can use */
 	RTW_WLAN_CATEGORY_TDLS = 12,
-	RTW_WLAN_CATEGORY_MESH = 13,
-	RTW_WLAN_CATEGORY_MULTIHOP = 14,
-	RTW_WLAN_CATEGORY_SELF_PROTECTED = 15,
+	RTW_WLAN_CATEGORY_SELF_PROTECTED = 15, /* add for CONFIG_IEEE80211W, none 11w also can use */
 	RTW_WLAN_CATEGORY_WMM = 17,
 	RTW_WLAN_CATEGORY_VHT = 21,
 	RTW_WLAN_CATEGORY_P2P = 0x7f,/* P2P action frames */
 };
-
-#define CATEGORY_IS_GROUP_PRIVACY(cat) \
-	(cat == RTW_WLAN_CATEGORY_MESH || cat == RTW_WLAN_CATEGORY_MULTIHOP)
-
-#define CATEGORY_IS_NON_ROBUST(cat) \
-	(cat == RTW_WLAN_CATEGORY_PUBLIC \
-	|| cat == RTW_WLAN_CATEGORY_HT \
-	|| cat == RTW_WLAN_CATEGORY_UNPROTECTED_WNM \
-	|| cat == RTW_WLAN_CATEGORY_SELF_PROTECTED \
-	|| cat == RTW_WLAN_CATEGORY_VHT \
-	|| cat == RTW_WLAN_CATEGORY_P2P)
-
-#define CATEGORY_IS_ROBUST(cat) !CATEGORY_IS_NON_ROBUST(cat)
 
 /* SPECTRUM_MGMT action code */
 enum rtw_ieee80211_spectrum_mgmt_actioncode {
@@ -1817,8 +1801,6 @@ struct rtw_ieee802_11_elems {
 	u8 vht_operation_len;
 	u8 *vht_op_mode_notify;
 	u8 vht_op_mode_notify_len;
-	u8 *rm_en_cap;
-	u8 rm_en_cap_len;
 };
 
 typedef enum { ParseOK = 0, ParseUnknown = 1, ParseFailed = -1 } ParseRes;
@@ -1828,7 +1810,7 @@ ParseRes rtw_ieee802_11_parse_elems(u8 *start, uint len,
 				int show_errors);
 
 u8 *rtw_set_fixed_ie(unsigned char *pbuf, unsigned int len, unsigned char *source, unsigned int *frlen);
-u8 *rtw_set_ie(u8 *pbuf, sint index, uint len, const u8 *source, uint *frlen);
+u8 *rtw_set_ie(u8 *pbuf, sint index, uint len, u8 *source, uint *frlen);
 
 enum secondary_ch_offset {
 	SCN = 0, /* no secondary channel */
@@ -1841,33 +1823,11 @@ u8 *rtw_set_ie_ch_switch(u8 *buf, u32 *buf_len, u8 ch_switch_mode, u8 new_ch, u8
 u8 *rtw_set_ie_secondary_ch_offset(u8 *buf, u32 *buf_len, u8 secondary_ch_offset);
 u8 *rtw_set_ie_mesh_ch_switch_parm(u8 *buf, u32 *buf_len, u8 ttl, u8 flags, u16 reason, u16 precedence);
 
-u8 *rtw_get_ie(const u8 *pbuf, sint index, sint *len, sint limit);
-u8 *rtw_get_ie_ex(const u8 *in_ie, uint in_len, u8 eid, const u8 *oui, u8 oui_len, u8 *ie, uint *ielen);
+u8 *rtw_get_ie(u8 *pbuf, sint index, sint *len, sint limit);
+u8 *rtw_get_ie_ex(u8 *in_ie, uint in_len, u8 eid, u8 *oui, u8 oui_len, u8 *ie, uint *ielen);
 int rtw_ies_remove_ie(u8 *ies, uint *ies_len, uint offset, u8 eid, u8 *oui, u8 oui_len);
 
 void rtw_set_supported_rate(u8 *SupportedRates, uint mode) ;
-
-#define GET_RSN_CAP_MFP_OPTION(cap)	LE_BITS_TO_2BYTE(((u8 *)(cap)), 6, 2)
-
-#define MFP_NO			0
-#define MFP_INVALID		1
-#define MFP_OPTIONAL	2
-#define MFP_REQUIRED	3
-
-struct rsne_info {
-	u8 *gcs;
-	u16 pcs_cnt;
-	u8 *pcs_list;
-	u16 akm_cnt;
-	u8 *akm_list;
-	u8 *cap;
-	u16 pmkid_cnt;
-	u8 *pmkid_list;
-	u8 *gmcs;
-
-	u8 err;
-};
-int rtw_rsne_info_parse(const u8 *ie, uint ie_len, struct rsne_info *info);
 
 unsigned char *rtw_get_wpa_ie(unsigned char *pie, int *wpa_ie_len, int limit);
 unsigned char *rtw_get_wpa2_ie(unsigned char *pie, int *rsn_ie_len, int limit);
@@ -1875,13 +1835,13 @@ int rtw_get_wpa_cipher_suite(u8 *s);
 int rtw_get_wpa2_cipher_suite(u8 *s);
 int rtw_get_wapi_ie(u8 *in_ie, uint in_len, u8 *wapi_ie, u16 *wapi_len);
 int rtw_parse_wpa_ie(u8 *wpa_ie, int wpa_ie_len, int *group_cipher, int *pairwise_cipher, int *is_8021x);
-int rtw_parse_wpa2_ie(u8 *wpa_ie, int wpa_ie_len, int *group_cipher, int *pairwise_cipher, int *is_8021x, u8 *mfp_opt);
+int rtw_parse_wpa2_ie(u8 *wpa_ie, int wpa_ie_len, int *group_cipher, int *pairwise_cipher, int *is_8021x);
 
 int rtw_get_sec_ie(u8 *in_ie, uint in_len, u8 *rsn_ie, u16 *rsn_len, u8 *wpa_ie, u16 *wpa_len);
 
 u8 rtw_is_wps_ie(u8 *ie_ptr, uint *wps_ielen);
 u8 *rtw_get_wps_ie_from_scan_queue(u8 *in_ie, uint in_len, u8 *wps_ie, uint *wps_ielen, enum bss_type frame_type);
-u8 *rtw_get_wps_ie(const u8 *in_ie, uint in_len, u8 *wps_ie, uint *wps_ielen);
+u8 *rtw_get_wps_ie(u8 *in_ie, uint in_len, u8 *wps_ie, uint *wps_ielen);
 u8 *rtw_get_wps_attr(u8 *wps_ie, uint wps_ielen, u16 target_attr_id , u8 *buf_attr, u32 *len_attr);
 u8 *rtw_get_wps_attr_content(u8 *wps_ie, uint wps_ielen, u16 target_attr_id , u8 *buf_content, uint *len_content);
 
@@ -1894,13 +1854,13 @@ u8 *rtw_get_wps_attr_content(u8 *wps_ie, uint wps_ielen, u16 target_attr_id , u8
 #define for_each_ie(ie, buf, buf_len) \
 	for (ie = (void *)buf; (((u8 *)ie) - ((u8 *)buf) + 1) < buf_len; ie = (void *)(((u8 *)ie) + *(((u8 *)ie)+1) + 2))
 
-void dump_ies(void *sel, const u8 *buf, u32 buf_len);
+void dump_ies(void *sel, u8 *buf, u32 buf_len);
 
 #ifdef CONFIG_80211N_HT
-void dump_ht_cap_ie_content(void *sel, const u8 *buf, u32 buf_len);
+void dump_ht_cap_ie_content(void *sel, u8 *buf, u32 buf_len);
 #endif
 
-void dump_wps_ie(void *sel, const u8 *ie, u32 ie_len);
+void dump_wps_ie(void *sel, u8 *ie, u32 ie_len);
 
 void rtw_ies_get_chbw(u8 *ies, int ies_len, u8 *ch, u8 *bw, u8 *offset);
 
@@ -1913,8 +1873,8 @@ void rtw_sync_chbw(u8 *req_ch, u8 *req_bw, u8 *req_offset
 
 u32 rtw_get_p2p_merged_ies_len(u8 *in_ie, u32 in_len);
 int rtw_p2p_merge_ies(u8 *in_ie, u32 in_len, u8 *merge_ie);
-void dump_p2p_ie(void *sel, const u8 *ie, u32 ie_len);
-u8 *rtw_get_p2p_ie(const u8 *in_ie, int in_len, u8 *p2p_ie, uint *p2p_ielen);
+void dump_p2p_ie(void *sel, u8 *ie, u32 ie_len);
+u8 *rtw_get_p2p_ie(u8 *in_ie, int in_len, u8 *p2p_ie, uint *p2p_ielen);
 u8 *rtw_get_p2p_attr(u8 *p2p_ie, uint p2p_ielen, u8 target_attr_id, u8 *buf_attr, u32 *len_attr);
 u8 *rtw_get_p2p_attr_content(u8 *p2p_ie, uint p2p_ielen, u8 target_attr_id, u8 *buf_content, uint *len_content);
 u32 rtw_set_p2p_attr_content(u8 *pbuf, u8 attr_id, u16 attr_len, u8 *pdata_attr);
@@ -1924,8 +1884,8 @@ u8 *rtw_bss_ex_get_p2p_ie(WLAN_BSSID_EX *bss_ex, u8 *p2p_ie, uint *p2p_ielen);
 void rtw_bss_ex_del_p2p_ie(WLAN_BSSID_EX *bss_ex);
 void rtw_bss_ex_del_p2p_attr(WLAN_BSSID_EX *bss_ex, u8 attr_id);
 
-void dump_wfd_ie(void *sel, const u8 *ie, u32 ie_len);
-u8 *rtw_get_wfd_ie(const u8 *in_ie, int in_len, u8 *wfd_ie, uint *wfd_ielen);
+void dump_wfd_ie(void *sel, u8 *ie, u32 ie_len);
+u8 *rtw_get_wfd_ie(u8 *in_ie, int in_len, u8 *wfd_ie, uint *wfd_ielen);
 u8 *rtw_get_wfd_attr(u8 *wfd_ie, uint wfd_ielen, u8 target_attr_id, u8 *buf_attr, u32 *len_attr);
 u8 *rtw_get_wfd_attr_content(u8 *wfd_ie, uint wfd_ielen, u8 target_attr_id, u8 *buf_content, uint *len_content);
 uint rtw_del_wfd_ie(u8 *ies, uint ies_len_ori, const char *msg);

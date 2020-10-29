@@ -427,9 +427,6 @@ typedef enum _BTC_SET_TYPE {
 	BTC_SET_ACT_GET_BT_RSSI,
 	BTC_SET_ACT_AGGREGATE_CTRL,
 	BTC_SET_ACT_ANTPOSREGRISTRY_CTRL,
-
-	// for mimo ps mode setting
-	BTC_SET_MIMO_PS_MODE,
 	/*===== for 1Ant ======*/
 	/* type BOOLEAN */
 

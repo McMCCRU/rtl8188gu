@@ -95,51 +95,21 @@ void rtw_acs_reset(_adapter *adapter)
 	struct auto_chan_sel *pacs = &hal_data->acs;
 
 	_rtw_memset(pacs, 0, sizeof(struct auto_chan_sel));
-	#ifdef CONFIG_RTW_ACS_DBG
-	rtw_acs_adv_reset(adapter);
-	#endif /*CONFIG_RTW_ACS_DBG*/
 }
 
-#ifdef CONFIG_RTW_ACS_DBG
-u8 rtw_is_acs_igi_valid(_adapter *adapter)
-{
-	HAL_DATA_TYPE *hal_data = GET_HAL_DATA(adapter);
-	struct auto_chan_sel *pacs = &hal_data->acs;
-
-	if ((pacs->igi) && ((pacs->igi >= 0x1E) || (pacs->igi < 0x60)))
-		return _TRUE;
-
-	return _FALSE;
-}
-void rtw_acs_adv_setting(_adapter *adapter, RT_SCAN_TYPE scan_type, u16 scan_time, u8 igi, u8 bw)
-{
-	HAL_DATA_TYPE *hal_data = GET_HAL_DATA(adapter);
-	struct auto_chan_sel *pacs = &hal_data->acs;
-	struct mlme_ext_priv *pmlmeext = &adapter->mlmeextpriv;
-	struct mlme_ext_info *pmlmeinfo = &pmlmeext->mlmext_info;
-
-	pacs->scan_type = scan_type;
-	pacs->scan_time = scan_time;
-	pacs->igi = igi;
-	pacs->bw = bw;
-	RTW_INFO("[ACS] ADV setting - scan_type:%c, ch_ms:%d(ms), igi:0x%02x, bw:%d\n",
-		pacs->scan_type ? 'A' : 'P', pacs->scan_time, pacs->igi, pacs->bw);
-}
-void rtw_acs_adv_reset(_adapter *adapter)
-{
-	rtw_acs_adv_setting(adapter, SCAN_ACTIVE, 0, 0, 0);
-}
-#endif /*CONFIG_RTW_ACS_DBG*/
 void rtw_acs_trigger(_adapter *adapter, u16 scan_time_ms, u8 scan_chan)
 {
 	HAL_DATA_TYPE *hal_data = GET_HAL_DATA(adapter);
 	struct PHY_DM_STRUCT *phydm = adapter_to_phydm(adapter);
+	u16 sample_times = 0;
 
 	hal_data->acs.trigger_ch = scan_chan;
-	phydm_ccx_monitor_trigger(phydm, scan_time_ms);
+	/*scan_time - ms ,1ms can sample 250 times*/
+	sample_times = scan_time_ms * 250;
+	phydm_ccx_monitor_trigger(phydm, sample_times);
 
 	#ifdef CONFIG_RTW_ACS_DBG
-	RTW_INFO("[ACS] Trigger CH:%d, Times:%d\n", hal_data->acs.trigger_ch, scan_time_ms);
+	RTW_INFO("[ACS] Trigger CH:%d, Times:%d\n", hal_data->acs.trigger_ch, sample_times);
 	#endif
 }
 void rtw_acs_get_rst(_adapter *adapter)
@@ -221,9 +191,6 @@ void rtw_acs_info_dump(void *sel, _adapter *adapter)
 	_RTW_PRINT_SEL(sel, "Best 5G Channel:%d\n\n", hal_data->acs.best_chan_5g);
 
 	#ifdef CONFIG_RTW_ACS_DBG
-	_RTW_PRINT_SEL(sel, "Advanced setting - scan_type:%c, ch_ms:%d(ms), igi:0x%02x, bw:%d\n",
-		hal_data->acs.scan_type ? 'A' : 'P', hal_data->acs.scan_time, hal_data->acs.igi, hal_data->acs.bw);
-
 	_RTW_PRINT_SEL(sel, "BW  20MHz\n");
 	_RTW_PRINT_SEL(sel, "%5s  %3s  %3s  %3s(%%)  %3s(%%)  %3s\n",
 						"Index", "CH", "BSS", "CLM", "NHM", "ITF");

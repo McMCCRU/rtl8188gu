@@ -41,20 +41,19 @@
 /* unit: % WiFi RSSI Threshold for 2-Ant free-run/2-Ant TDMA translation.
  * (default = 42)
  */
-#define	BT_8822B_2ANT_WIFI_RSSI_COEXSWITCH_THRES1			80
+#define	BT_8822B_2ANT_WIFI_RSSI_COEXSWITCH_THRES1				30
 /* unit: % BT RSSI Threshold for 2-Ant free-run/2-Ant TDMA translation.
  * (default = 46)
  */
-#define	BT_8822B_2ANT_BT_RSSI_COEXSWITCH_THRES1				80
+#define	BT_8822B_2ANT_BT_RSSI_COEXSWITCH_THRES1				20
 /* unit: % WiFi RSSI Threshold for 1-Ant TDMA/1-Ant PS-TDMA translation.
  * (default = 42)
  */
-#define	BT_8822B_2ANT_WIFI_RSSI_COEXSWITCH_THRES2			80
+#define	BT_8822B_2ANT_WIFI_RSSI_COEXSWITCH_THRES2				30
 /* unit: % BT RSSI Threshold for 1-Ant TDMA/1-Ant PS-TDMA translation.
  * (default = 46)
  */
-#define	BT_8822B_2ANT_BT_RSSI_COEXSWITCH_THRES2				80
-
+#define	BT_8822B_2ANT_BT_RSSI_COEXSWITCH_THRES2				20
 #define	BT_8822B_2ANT_DEFAULT_ISOLATION						25	 /*  unit: dB */
 #define   BT_8822B_2ANT_WIFI_MAX_TX_POWER						15	 /*  unit: dBm */
 #define   BT_8822B_2ANT_BT_MAX_TX_POWER							3	 /*  unit: dBm */
@@ -212,8 +211,7 @@ enum bt_8822b_2ant_Scoreboard {
 	BT_8822B_2ANT_SCOREBOARD_SCAN								= BIT(2),
 	BT_8822B_2ANT_SCOREBOARD_UNDERTEST							= BIT(3),
 	BT_8822B_2ANT_SCOREBOARD_RXGAIN								= BIT(4),
-	BT_8822B_2ANT_SCOREBOARD_WLBUSY								= BIT(6),
-	BT_8822B_2ANT_SCOREBOARD_EXTFEM								= BIT(8),
+	BT_8822B_2ANT_SCOREBOARD_WLBUSY                                                              = BIT(6)
 };
 
 

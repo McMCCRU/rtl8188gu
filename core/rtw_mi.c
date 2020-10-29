@@ -330,7 +330,7 @@ void dump_mi_status(void *sel, struct dvobj_priv *dvobj)
 	RTW_PRINT_SEL(sel, "linked_mesh_num:%d\n", DEV_MESH_LD_NUM(dvobj));
 #endif
 #ifdef CONFIG_P2P
-	RTW_PRINT_SEL(sel, "p2p_device_num:%d\n", rtw_mi_stay_in_p2p_mode(dvobj_get_primary_adapter(dvobj)));
+	RTW_PRINT_SEL(sel, "p2p_device_num:%d\n", rtw_mi_stay_in_p2p_mode(dvobj->padapters[IFACE_ID0]));
 #endif
 	RTW_PRINT_SEL(sel, "scan_num:%d\n", DEV_STA_NUM(dvobj));
 	RTW_PRINT_SEL(sel, "under_wps_num:%d\n", DEV_WPS_NUM(dvobj));
@@ -779,6 +779,48 @@ void rtw_mi_buddy_set_scan_deny(_adapter *adapter, u32 ms)
 	_rtw_mi_process(adapter, _TRUE, &in_data, _rtw_mi_set_scan_deny);
 }
 #endif /*CONFIG_SET_SCAN_DENY_TIMER*/
+
+struct nulldata_param {
+	unsigned char *da;
+	unsigned int power_mode;
+	int try_cnt;
+	int wait_ms;
+};
+
+static u8 _rtw_mi_issue_nulldata(_adapter *padapter, void *data)
+{
+	struct nulldata_param *pnulldata_param = (struct nulldata_param *)data;
+
+	if (is_client_associated_to_ap(padapter) == _TRUE) {
+		/* TODO: TDLS peers */
+		issue_nulldata(padapter, pnulldata_param->da, pnulldata_param->power_mode, pnulldata_param->try_cnt, pnulldata_param->wait_ms);
+		return _TRUE;
+	}
+	return _FALSE;
+}
+
+u8 rtw_mi_issue_nulldata(_adapter *padapter, unsigned char *da, unsigned int power_mode, int try_cnt, int wait_ms)
+{
+	struct nulldata_param nparam;
+
+	nparam.da = da;
+	nparam.power_mode = power_mode;/*0 or 1*/
+	nparam.try_cnt = try_cnt;
+	nparam.wait_ms = wait_ms;
+
+	return _rtw_mi_process(padapter, _FALSE, &nparam, _rtw_mi_issue_nulldata);
+}
+u8 rtw_mi_buddy_issue_nulldata(_adapter *padapter, unsigned char *da, unsigned int power_mode, int try_cnt, int wait_ms)
+{
+	struct nulldata_param nparam;
+
+	nparam.da = da;
+	nparam.power_mode = power_mode;
+	nparam.try_cnt = try_cnt;
+	nparam.wait_ms = wait_ms;
+
+	return _rtw_mi_process(padapter, _TRUE, &nparam, _rtw_mi_issue_nulldata);
+}
 
 static u8 _rtw_mi_beacon_update(_adapter *padapter, void *data)
 {
@@ -1458,3 +1500,27 @@ void rtw_mi_update_ap_bmc_camid(_adapter *padapter, u8 camid_a, u8 camid_b)
 #endif
 }
 
+#ifdef CONFIG_AP_MODE
+static u8 _rtw_mi_ap_acdata_control(_adapter *padapter, void *data)
+{
+	u8 power_mode = *(u8 *)data;
+	struct mlme_priv *pmlmepriv = &(padapter->mlmepriv);
+
+	if (MLME_IS_AP(padapter) || MLME_IS_MESH(padapter))
+		rtw_ap_acdata_control(padapter, power_mode);
+	return _TRUE;
+}
+
+void rtw_mi_ap_acdata_control(_adapter *padapter, u8 power_mode)
+{
+	u8 in_data = power_mode;
+
+	_rtw_mi_process(padapter, _FALSE, &in_data, _rtw_mi_ap_acdata_control);
+}
+void rtw_mi_buddy_ap_acdata_control(_adapter *padapter, u8 power_mode)
+{
+	u8 in_data = power_mode;
+
+	_rtw_mi_process(padapter, _TRUE, &in_data, _rtw_mi_ap_acdata_control);
+}
+#endif /*CONFIG_AP_MODE*/

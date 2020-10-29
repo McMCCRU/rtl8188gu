@@ -1068,20 +1068,22 @@ static void _bfer_remove_entry(PADAPTER adapter, struct beamformer_entry *entry)
 
 static u8 _bfer_set_entry_gid(PADAPTER adapter, u8 *addr, u8 *gid, u8 *position)
 {
-	struct beamformer_entry bfer;
+	struct beamformer_entry *bfer = NULL;
 
-	memset(&bfer, 0, sizeof(bfer));
-	memcpy(bfer.mac_addr, addr, 6);
+
+	bfer = _bfer_get_entry_by_addr(adapter, addr);
+	if (!bfer) {
+		RTW_INFO("%s: Cannot find BFer entry!!\n", __FUNCTION__);
+		return _FAIL;
+	}
 
 	/* Parsing Membership Status Array */
-	memcpy(bfer.gid_valid, gid, 8);
-
+	_rtw_memcpy(bfer->gid_valid, gid, 8);
 	/* Parsing User Position Array */
-	memcpy(bfer.user_position, position, 16);
+	_rtw_memcpy(bfer->user_position, position, 16);
 
 	/* Config HW GID table */
-	rtw_bf_cmd(adapter, BEAMFORMING_CTRL_SET_GID_TABLE, (u8 *) &bfer,
-			sizeof(bfer), 1);
+	rtw_bf_cmd(adapter, BEAMFORMING_CTRL_SET_GID_TABLE, (u8*)&bfer, sizeof(struct beamformer_entry *), 1);
 
 	return _SUCCESS;
 }
@@ -1792,7 +1794,6 @@ void rtw_bf_init(PADAPTER adapter)
 	info->beamformee_mu_reg_maping = 0;
 	info->first_mu_bfee_index = 0xFF;
 	info->mu_bfer_curidx = 0xFF;
-	info->cur_csi_rpt_rate = HALMAC_OFDM24;
 
 	_sounding_init(&info->sounding_info);
 	rtw_init_timer(&info->sounding_timer, adapter, _sounding_timer_handler, adapter);
@@ -1831,7 +1832,7 @@ void rtw_bf_cmd_hdl(PADAPTER adapter, u8 type, u8 *pbuf)
 		break;
 
 	case BEAMFORMING_CTRL_SET_GID_TABLE:
-		rtw_hal_set_hwreg(adapter, HW_VAR_SOUNDING_SET_GID_TABLE, pbuf);
+		rtw_hal_set_hwreg(adapter, HW_VAR_SOUNDING_SET_GID_TABLE, *(void**)pbuf);
 		break;
 
 	case BEAMFORMING_CTRL_SET_CSI_REPORT:

@@ -73,9 +73,9 @@ u32 rtw_atoi(u8 *s)
 
 }
 
-inline void *_rtw_vmalloc(u32 sz)
+inline u8 *_rtw_vmalloc(u32 sz)
 {
-	void *pbuf;
+	u8	*pbuf;
 #ifdef PLATFORM_LINUX
 	pbuf = vmalloc(sz);
 #endif
@@ -99,9 +99,9 @@ inline void *_rtw_vmalloc(u32 sz)
 	return pbuf;
 }
 
-inline void *_rtw_zvmalloc(u32 sz)
+inline u8 *_rtw_zvmalloc(u32 sz)
 {
-	void *pbuf;
+	u8	*pbuf;
 #ifdef PLATFORM_LINUX
 	pbuf = _rtw_vmalloc(sz);
 	if (pbuf != NULL)
@@ -119,7 +119,7 @@ inline void *_rtw_zvmalloc(u32 sz)
 	return pbuf;
 }
 
-inline void _rtw_vmfree(void *pbuf, u32 sz)
+inline void _rtw_vmfree(u8 *pbuf, u32 sz)
 {
 #ifdef PLATFORM_LINUX
 	vfree(pbuf);
@@ -139,14 +139,15 @@ inline void _rtw_vmfree(void *pbuf, u32 sz)
 #endif /* DBG_MEMORY_LEAK */
 }
 
-void *_rtw_malloc(u32 sz)
+u8 *_rtw_malloc(u32 sz)
 {
-	void *pbuf = NULL;
+
+	u8	*pbuf = NULL;
 
 #ifdef PLATFORM_LINUX
 #ifdef RTK_DMP_PLATFORM
 	if (sz > 0x4000)
-		pbuf = dvr_malloc(sz);
+		pbuf = (u8 *)dvr_malloc(sz);
 	else
 #endif
 		pbuf = kmalloc(sz, in_interrupt() ? GFP_ATOMIC : GFP_KERNEL);
@@ -175,12 +176,12 @@ void *_rtw_malloc(u32 sz)
 }
 
 
-void *_rtw_zmalloc(u32 sz)
+u8 *_rtw_zmalloc(u32 sz)
 {
 #ifdef PLATFORM_FREEBSD
 	return malloc(sz, M_DEVBUF, M_ZERO | M_NOWAIT);
 #else /* PLATFORM_FREEBSD */
-	void *pbuf = _rtw_malloc(sz);
+	u8	*pbuf = _rtw_malloc(sz);
 
 	if (pbuf != NULL) {
 
@@ -198,7 +199,7 @@ void *_rtw_zmalloc(u32 sz)
 #endif /* PLATFORM_FREEBSD */
 }
 
-void _rtw_mfree(void *pbuf, u32 sz)
+void	_rtw_mfree(u8 *pbuf, u32 sz)
 {
 
 #ifdef PLATFORM_LINUX
@@ -235,8 +236,8 @@ struct sk_buff *dev_alloc_skb(unsigned int size)
 	struct sk_buff *skb = NULL;
 	u8 *data = NULL;
 
-	/* skb = _rtw_zmalloc(sizeof(struct sk_buff)); */ /* for skb->len, etc. */
-	skb = _rtw_malloc(sizeof(struct sk_buff));
+	/* skb = (struct sk_buff *)_rtw_zmalloc(sizeof(struct sk_buff)); */ /* for skb->len, etc. */
+	skb = (struct sk_buff *)_rtw_malloc(sizeof(struct sk_buff));
 	if (!skb)
 		goto out;
 	data = _rtw_malloc(size);
@@ -253,7 +254,7 @@ struct sk_buff *dev_alloc_skb(unsigned int size)
 out:
 	return skb;
 nodata:
-	_rtw_mfree(skb, sizeof(struct sk_buff));
+	_rtw_mfree((u8 *)skb, sizeof(struct sk_buff));
 	skb = NULL;
 	goto out;
 
@@ -266,7 +267,7 @@ void dev_kfree_skb_any(struct sk_buff *skb)
 		_rtw_mfree(skb->head, 0);
 	/* printf("%s()-%d: skb = %p\n", __FUNCTION__, __LINE__, skb); */
 	if (skb)
-		_rtw_mfree(skb, 0);
+		_rtw_mfree((u8 *)skb, 0);
 }
 struct sk_buff *skb_clone(const struct sk_buff *skb)
 {
@@ -568,9 +569,9 @@ bool match_mstat_sniff_rules(const enum mstat_f flags, const size_t size)
 	return _FALSE;
 }
 
-inline void *dbg_rtw_vmalloc(u32 sz, const enum mstat_f flags, const char *func, const int line)
+inline u8 *dbg_rtw_vmalloc(u32 sz, const enum mstat_f flags, const char *func, const int line)
 {
-	void *p;
+	u8  *p;
 
 	if (match_mstat_sniff_rules(flags, sz))
 		RTW_INFO("DBG_MEM_ALLOC %s:%d %s(%d)\n", func, line, __FUNCTION__, (sz));
@@ -586,9 +587,9 @@ inline void *dbg_rtw_vmalloc(u32 sz, const enum mstat_f flags, const char *func,
 	return p;
 }
 
-inline void *dbg_rtw_zvmalloc(u32 sz, const enum mstat_f flags, const char *func, const int line)
+inline u8 *dbg_rtw_zvmalloc(u32 sz, const enum mstat_f flags, const char *func, const int line)
 {
-	void *p;
+	u8 *p;
 
 	if (match_mstat_sniff_rules(flags, sz))
 		RTW_INFO("DBG_MEM_ALLOC %s:%d %s(%d)\n", func, line, __FUNCTION__, (sz));
@@ -604,7 +605,7 @@ inline void *dbg_rtw_zvmalloc(u32 sz, const enum mstat_f flags, const char *func
 	return p;
 }
 
-inline void dbg_rtw_vmfree(void *pbuf, u32 sz, const enum mstat_f flags, const char *func, const int line)
+inline void dbg_rtw_vmfree(u8 *pbuf, u32 sz, const enum mstat_f flags, const char *func, const int line)
 {
 
 	if (match_mstat_sniff_rules(flags, sz))
@@ -619,9 +620,9 @@ inline void dbg_rtw_vmfree(void *pbuf, u32 sz, const enum mstat_f flags, const c
 	);
 }
 
-inline void *dbg_rtw_malloc(u32 sz, const enum mstat_f flags, const char *func, const int line)
+inline u8 *dbg_rtw_malloc(u32 sz, const enum mstat_f flags, const char *func, const int line)
 {
-	void *p;
+	u8 *p;
 
 	if (match_mstat_sniff_rules(flags, sz))
 		RTW_INFO("DBG_MEM_ALLOC %s:%d %s(%d)\n", func, line, __FUNCTION__, (sz));
@@ -637,9 +638,9 @@ inline void *dbg_rtw_malloc(u32 sz, const enum mstat_f flags, const char *func, 
 	return p;
 }
 
-inline void *dbg_rtw_zmalloc(u32 sz, const enum mstat_f flags, const char *func, const int line)
+inline u8 *dbg_rtw_zmalloc(u32 sz, const enum mstat_f flags, const char *func, const int line)
 {
-	void *p;
+	u8 *p;
 
 	if (match_mstat_sniff_rules(flags, sz))
 		RTW_INFO("DBG_MEM_ALLOC %s:%d %s(%d)\n", func, line, __FUNCTION__, (sz));
@@ -655,7 +656,7 @@ inline void *dbg_rtw_zmalloc(u32 sz, const enum mstat_f flags, const char *func,
 	return p;
 }
 
-inline void dbg_rtw_mfree(void *pbuf, u32 sz, const enum mstat_f flags, const char *func, const int line)
+inline void dbg_rtw_mfree(u8 *pbuf, u32 sz, const enum mstat_f flags, const char *func, const int line)
 {
 	if (match_mstat_sniff_rules(flags, sz))
 		RTW_INFO("DBG_MEM_ALLOC %s:%d %s(%d)\n", func, line, __FUNCTION__, (sz));
@@ -1093,14 +1094,20 @@ void rtw_list_insert_tail(_list *plist, _list *phead)
 
 }
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 void rtw_init_timer(_timer *ptimer, void *padapter, void *pfunc, void *ctx)
 {
 	_adapter *adapter = (_adapter *)padapter;
 
+#ifdef PLATFORM_LINUX
 	_init_timer(ptimer, adapter->pnetdev, pfunc, ctx);
-}
 #endif
+#ifdef PLATFORM_FREEBSD
+	_init_timer(ptimer, adapter->pifp, pfunc, ctx);
+#endif
+#ifdef PLATFORM_WINDOWS
+	_init_timer(ptimer, adapter->hndis_adapter, pfunc, ctx);
+#endif
+}
 
 /*
 
@@ -1485,38 +1492,15 @@ inline systime _rtw_ms_to_systime(u32 ms)
 #endif
 }
 
-inline systime _rtw_us_to_systime(u32 us)
-{
-#ifdef PLATFORM_LINUX
-	return usecs_to_jiffies(us);
-#else
-	#error "TBD\n"
-#endif
-}
-
 /* the input parameter start use the same unit as returned by rtw_get_current_time */
 inline s32 _rtw_get_passing_time_ms(systime start)
 {
 	return _rtw_systime_to_ms(_rtw_get_current_time() - start);
 }
 
-inline s32 _rtw_get_remaining_time_ms(systime end)
-{
-	return _rtw_systime_to_ms(end - _rtw_get_current_time());
-}
-
 inline s32 _rtw_get_time_interval_ms(systime start, systime end)
 {
 	return _rtw_systime_to_ms(end - start);
-}
-
-inline bool _rtw_time_after(systime a, systime b)
-{
-#ifdef PLATFORM_LINUX
-	return time_after(a, b);
-#else
-	#error "TBD\n"
-#endif
 }
 
 void rtw_sleep_schedulable(int ms)
@@ -2048,12 +2032,10 @@ static int readFile(struct file *fp, char *buf, int len)
 		return -EPERM;
 
 	while (sum < len) {
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 1, 0))
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 14, 0))
-		rlen = kernel_read(fp, buf + sum, len - sum, &fp->f_pos);
-#else
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 1, 0) && LINUX_VERSION_CODE < KERNEL_VERSION(4, 14, 0))
 		rlen = __vfs_read(fp, buf + sum, len - sum, &fp->f_pos);
-#endif
+#elif (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 14, 0))
+		rlen = kernel_read(fp, buf + sum, len - sum, &fp->f_pos);
 #else
 		rlen = fp->f_op->read(fp, buf + sum, len - sum, &fp->f_pos);
 #endif
@@ -2090,6 +2072,10 @@ static int writeFile(struct file *fp, char *buf, int len)
 
 }
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0))
+  #define get_ds() (KERNEL_DS)
+#endif
+
 /*
 * Test if the specifi @param path is a file and readable
 * If readable, @param sz is got
@@ -2108,7 +2094,7 @@ static int isFileReadable(const char *path, u32 *sz)
 		ret = PTR_ERR(fp);
 	else {
 		oldfs = get_fs();
-		set_fs(KERNEL_DS);
+		set_fs(get_ds());
 
 		if (1 != readFile(fp, &buf, 1))
 			ret = PTR_ERR(fp);
@@ -2146,7 +2132,7 @@ static int retriveFromFile(const char *path, u8 *buf, u32 sz)
 			RTW_INFO("%s openFile path:%s fp=%p\n", __FUNCTION__, path , fp);
 
 			oldfs = get_fs();
-			set_fs(KERNEL_DS);
+			set_fs(get_ds());
 			ret = readFile(fp, buf, sz);
 			set_fs(oldfs);
 			closeFile(fp);
@@ -2181,7 +2167,7 @@ static int storeToFile(const char *path, u8 *buf, u32 sz)
 			RTW_INFO("%s openFile path:%s fp=%p\n", __FUNCTION__, path , fp);
 
 			oldfs = get_fs();
-			set_fs(KERNEL_DS);
+			set_fs(get_ds());
 			ret = writeFile(fp, buf, sz);
 			set_fs(oldfs);
 			closeFile(fp);
@@ -2712,7 +2698,7 @@ int map_readN(const struct map_t *map, u16 offset, u16 len, u8 *buf)
 			else
 				c_len = seg->sa + seg->len - offset;
 		}
-			
+
 		_rtw_memcpy(c_dst, c_src, c_len);
 	}
 

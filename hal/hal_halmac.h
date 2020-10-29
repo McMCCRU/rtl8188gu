@@ -17,14 +17,14 @@
 
 #include <drv_types.h>		/* adapter_to_dvobj(), struct intf_hdl and etc. */
 #include <hal_data.h>		/* struct hal_spec_t */
-#include "halmac/halmac_api.h"	/* struct halmac_adapter* and etc. */
+#include "halmac/halmac_api.h"	/* PHALMAC_ADAPTER and etc. */
 
 /* HALMAC Definition for Driver */
 #define RTW_HALMAC_H2C_MAX_SIZE		8
 #define RTW_HALMAC_BA_SSN_RPT_SIZE	4
 
 #define dvobj_set_halmac(d, mac)	((d)->halmac = (mac))
-#define dvobj_to_halmac(d)		((struct halmac_adapter *)((d)->halmac))
+#define dvobj_to_halmac(d)		((PHALMAC_ADAPTER)((d)->halmac))
 #define adapter_to_halmac(p)		dvobj_to_halmac(adapter_to_dvobj(p))
 
 /* for H2C cmd */
@@ -97,7 +97,7 @@ struct rtw_halmac_bcn_ctrl {
 	u8 p2p_bcn_area:1;	/* Enable P2P BCN area on function */
 };
 
-extern struct halmac_platform_api rtw_halmac_platform_api;
+extern HALMAC_PLATFORM_API rtw_halmac_platform_api;
 
 /* HALMAC API for Driver(HAL) */
 u8 rtw_halmac_read8(struct intf_hdl *, u32 addr);
@@ -117,11 +117,11 @@ int rtw_halmac_write32(struct intf_hdl *, u32 addr, u32 value);
 void rtw_halmac_get_version(char *str, u32 len);
 
 /* Software Initialization */
-int rtw_halmac_init_adapter(struct dvobj_priv *d, struct halmac_platform_api *pf_api);
+int rtw_halmac_init_adapter(struct dvobj_priv *, PHALMAC_PLATFORM_API);
 int rtw_halmac_deinit_adapter(struct dvobj_priv *);
 
 /* Get operations */
-int rtw_halmac_get_hw_value(struct dvobj_priv *d, enum halmac_hw_id hw_id, void *pvalue);
+int rtw_halmac_get_hw_value(struct dvobj_priv *, HALMAC_HW_ID hw_id, VOID *pvalue);
 int rtw_halmac_get_tx_fifo_size(struct dvobj_priv *d, u32 *size);
 int rtw_halmac_get_rx_fifo_size(struct dvobj_priv *d, u32 *size);
 int rtw_halmac_get_rsvd_drv_pg_bndy(struct dvobj_priv *d, u16 *bndy);
@@ -140,7 +140,7 @@ int rtw_halmac_get_bcn_ctrl(struct dvobj_priv *d, enum _hw_port hwport, struct r
 /*int rtw_halmac_get_wow_reason(struct dvobj_priv *, u8 *reason);*/
 
 /* Set operations */
-int rtw_halmac_config_rx_info(struct dvobj_priv *d, enum halmac_drv_info info);
+int rtw_halmac_config_rx_info(struct dvobj_priv *, HALMAC_DRV_INFO);
 int rtw_halmac_set_max_dl_fw_size(struct dvobj_priv *d, u32 size);
 int rtw_halmac_set_mac_address(struct dvobj_priv *d, enum _hw_port hwport, u8 *addr);
 int rtw_halmac_set_bssid(struct dvobj_priv *d, enum _hw_port hwport, u8 *addr);
@@ -212,27 +212,4 @@ u8 rtw_halmac_switch_usb_mode(struct dvobj_priv *d, enum RTW_USB_SPEED usb_mode)
 #ifdef CONFIG_SUPPORT_TRX_SHARED
 void dump_trx_share_mode(void *sel, _adapter *adapter);
 #endif
-
-#ifdef CONFIG_BEAMFORMING
-#ifdef RTW_BEAMFORMING_VERSION_2
-int rtw_halmac_bf_add_mu_bfer(struct dvobj_priv *d, u16 paid, u16 csi_para,
-		u16 my_aid, enum halmac_csi_seg_len sel, u8 *addr);
-int rtw_halmac_bf_del_mu_bfer(struct dvobj_priv *d);
-
-int rtw_halmac_bf_cfg_sounding(struct dvobj_priv *d, enum halmac_snd_role role,
-		enum halmac_data_rate rate);
-int rtw_halmac_bf_del_sounding(struct dvobj_priv *d, enum halmac_snd_role role);
-
-int rtw_halmac_bf_cfg_csi_rate(struct dvobj_priv *d, u8 rssi, u8 current_rate,
-		u8 fixrate_en, u8 *new_rate);
-
-int rtw_halmac_bf_cfg_mu_mimo(struct dvobj_priv *d, enum halmac_snd_role role,
-		u8 *sounding_sts, u16 grouping_bitmap, u8 mu_tx_en,
-		u32 *given_gid_tab, u32 *given_user_pos);
-#define rtw_halmac_bf_cfg_mu_bfee(d, gid_tab, user_pos) \
-	rtw_halmac_bf_cfg_mu_mimo(d, HAL_BFEE, NULL, 0, 0, gid_tab, user_pos)
-
-#endif /* RTW_BEAMFORMING_VERSION_2 */
-#endif /* CONFIG_BEAMFORMING */
-
 #endif /* _HAL_HALMAC_H_ */

@@ -444,11 +444,6 @@ u32	_rtw_free_sta_priv(struct	sta_priv *pstapriv)
 
 		if (pstapriv->pallocated_stainfo_buf)
 			rtw_vmfree(pstapriv->pallocated_stainfo_buf, sizeof(struct sta_info) * NUM_STA + 4);
-		if (pstapriv->sta_dz_bitmap)
-			rtw_mfree(pstapriv->sta_dz_bitmap, ((((pstapriv->padapter)->dvobj)->macid_ctl.num) / 8));
-		if (pstapriv->tim_bitmap)
-			rtw_mfree(pstapriv->tim_bitmap, ((((pstapriv->padapter)->dvobj)->macid_ctl.num) / 8));
-
 	}
 
 	return _SUCCESS;
@@ -460,16 +455,12 @@ static void rtw_init_recv_timer(struct recv_reorder_ctrl *preorder_ctrl)
 	_adapter *padapter = preorder_ctrl->padapter;
 
 #if defined(CONFIG_80211N_HT) && defined(CONFIG_RECV_REORDERING_CTRL)
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 	rtw_init_timer(&(preorder_ctrl->reordering_ctrl_timer), padapter, rtw_reordering_ctrl_timeout_handler, preorder_ctrl);
-#else
-	timer_setup(&preorder_ctrl->reordering_ctrl_timer, rtw_reordering_ctrl_timeout_handler, 0);
-#endif
 #endif
 }
 
 /* struct	sta_info *rtw_alloc_stainfo(_queue *pfree_sta_queue, unsigned char *hwaddr) */
-struct	sta_info *rtw_alloc_stainfo(struct	sta_priv *pstapriv, const u8 *hwaddr)
+struct	sta_info *rtw_alloc_stainfo(struct	sta_priv *pstapriv, u8 *hwaddr)
 {
 	_irqL irqL, irqL2;
 	s32	index;
@@ -528,17 +519,10 @@ struct	sta_info *rtw_alloc_stainfo(struct	sta_priv *pstapriv, const u8 *hwaddr)
 			_rtw_memset(&psta->sta_recvpriv.rxcache.iv[i], 0, sizeof(psta->sta_recvpriv.rxcache.iv[i]));
 		}
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 		rtw_init_timer(&psta->addba_retry_timer, psta->padapter, addba_timer_hdl, psta);
 #ifdef CONFIG_IEEE80211W
 		rtw_init_timer(&psta->dot11w_expire_timer, psta->padapter, sa_query_timer_hdl, psta);
 #endif /* CONFIG_IEEE80211W */
-#else
-		timer_setup(&psta->addba_retry_timer, addba_timer_hdl, 0);
-#ifdef CONFIG_IEEE80211W
-		timer_setup(&psta->dot11w_expire_timer, sa_query_timer_hdl, 0);
-#endif /* CONFIG_IEEE80211W */
-#endif
 #ifdef CONFIG_TDLS
 		rtw_init_tdls_timer(pstapriv->padapter, psta);
 #endif /* CONFIG_TDLS */
@@ -610,10 +594,6 @@ u32	rtw_free_stainfo(_adapter *padapter , struct sta_info *psta)
 
 	if (psta == NULL)
 		goto exit;
-
-#ifdef CONFIG_RTW_80211K
-	rm_post_event(padapter, RM_ID_FOR_ALL(psta->cmn.aid), RM_EV_cancel);
-#endif
 
 	is_pre_link_sta = rtw_is_pre_link_sta(pstapriv, psta->cmn.mac_addr);
 
@@ -778,8 +758,8 @@ u32	rtw_free_stainfo(_adapter *padapter , struct sta_info *psta)
 #ifdef CONFIG_NATIVEAP_MLME
 
 	if (pmlmeinfo->state == _HW_STATE_AP_) {
-		rtw_tim_map_clear(padapter, pstapriv->sta_dz_bitmap, psta->cmn.aid);
-		rtw_tim_map_clear(padapter, pstapriv->tim_bitmap, psta->cmn.aid);
+		pstapriv->sta_dz_bitmap &= ~BIT(psta->cmn.aid);
+		pstapriv->tim_bitmap &= ~BIT(psta->cmn.aid);
 
 		/* rtw_indicate_sta_disassoc_event(padapter, psta); */
 
@@ -866,7 +846,7 @@ exit:
 }
 
 /* any station allocated can be searched by hash list */
-struct sta_info *rtw_get_stainfo(struct sta_priv *pstapriv, const u8 *hwaddr)
+struct sta_info *rtw_get_stainfo(struct sta_priv *pstapriv, u8 *hwaddr)
 {
 
 	_irqL	 irqL;
@@ -877,7 +857,7 @@ struct sta_info *rtw_get_stainfo(struct sta_priv *pstapriv, const u8 *hwaddr)
 
 	u32	index;
 
-	const u8 *addr;
+	u8 *addr;
 
 	u8 bc_addr[ETH_ALEN] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
 

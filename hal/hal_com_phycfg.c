@@ -282,7 +282,15 @@ static const struct map_t rtl8723d_pg_txpwr_def_info =
 	);
 #endif
 
-#ifdef CONFIG_RTL8710B // Peter, TODO
+#ifdef CONFIG_RTL8710B
+static const struct map_t rtl8710b_pg_txpwr_def_info =
+	MAP_ENT(0xC8, 1, 0xFF
+		, MAPSEG_ARRAY_ENT(0x20, 12,
+			0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x20)
+	);
+#endif
+
+#if 0 //def CONFIG_RTL8710B
 static const struct map_t rtl8710b_pg_txpwr_def_info =
 	MAP_ENT(0xB8, 1, 0xFF
 		, MAPSEG_ARRAY_ENT(0x10, 12,
@@ -314,8 +322,8 @@ static const struct map_t rtl8821a_pg_txpwr_def_info =
 static const struct map_t rtl8821c_pg_txpwr_def_info =
 	MAP_ENT(0xB8, 1, 0xFF
 		, MAPSEG_ARRAY_ENT(0x10, 54,
-			0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x02, 0xFF, 0xFF, 0xFF, 0xFF, 
-			0xFF, 0xFF, 0x28, 0x28, 0x28, 0x28, 0x28, 0x28, 0x28, 0x28, 0x28, 0x28, 0x28, 0x28, 0x28, 0x28, 
+			0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x02, 0xFF, 0xFF, 0xFF, 0xFF,
+			0xFF, 0xFF, 0x28, 0x28, 0x28, 0x28, 0x28, 0x28, 0x28, 0x28, 0x28, 0x28, 0x28, 0x28, 0x28, 0x28,
 			0x02, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xEC, 0xFF, 0xFF, 0xFF, 0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x2D,
 			0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x02)
 	);
@@ -706,7 +714,7 @@ u16 hal_load_pg_txpwr_info_path_2g(
 		rtw_warn_on(1);
 	}
 
-exit:	
+exit:
 	return offset;
 }
 
@@ -734,7 +742,7 @@ u16 hal_load_pg_txpwr_info_path_5g(
 		offset += PG_TXPWR_1PATH_BYTE_NUM_5G;
 		goto exit;
 	}
-	
+
 #ifdef CONFIG_IEEE80211_BAND_5GHZ
 	if (DBG_PG_TXPWR_READ)
 		RTW_INFO("%s[%c] eaddr:0x%03x\n", __func__, rf_path_char(path), offset);
@@ -797,7 +805,7 @@ u16 hal_load_pg_txpwr_info_path_5g(
 			}
 			offset++;
 		}
-	}	
+	}
 
 	/* OFDM diff 2T ~ 3T */
 	if (HAL_SPEC_CHK_RF_PATH_5G(hal_spec, path) && HAL_SPEC_CHK_TX_CNT(hal_spec, 1)) {
@@ -2772,10 +2780,7 @@ phy_GetChannelIndexOfTxPowerLimit(
 	return channelIndex;
 }
 
-/*
-* return txpwr limit absolute value
-* MAX_POWER_INDEX is returned when NO limit
-*/
+/* return txpwr limit absolute value */
 s8 phy_get_txpwr_lmt_abs(
 	IN	PADAPTER			Adapter,
 	IN	const char			*regd_name,
@@ -2836,41 +2841,31 @@ s8 phy_get_txpwr_lmt_abs(
 		goto release_lock;
 
 	if (Band == BAND_ON_2_4G) {
-		if (!is_ww_regd) {
-			lmt = ent->lmt_2g[bw][tlrs][ch_idx][ntx_idx];
-			if (lmt != -MAX_POWER_INDEX)
-				goto release_lock;
-		}
-
-		/* search for min value for WW regd or WW limit */
-		lmt = MAX_POWER_INDEX;
-		head = &rfctl->txpwr_lmt_list;
-		cur = get_next(head);
-		while ((rtw_end_of_queue_search(head, cur)) == _FALSE) {
-			ent = LIST_CONTAINOR(cur, struct txpwr_lmt_ent, list);
-			cur = get_next(cur);
-			if (ent->lmt_2g[bw][tlrs][ch_idx][ntx_idx] != -MAX_POWER_INDEX)
+		if (is_ww_regd) {
+			lmt = MAX_POWER_INDEX;
+			head = &rfctl->txpwr_lmt_list;
+			cur = get_next(head);
+			while ((rtw_end_of_queue_search(head, cur)) == _FALSE) {
+				ent = LIST_CONTAINOR(cur, struct txpwr_lmt_ent, list);
+				cur = get_next(cur);
 				lmt = rtw_min(lmt, ent->lmt_2g[bw][tlrs][ch_idx][ntx_idx]);
-		}
+			}
+		} else
+			lmt = ent->lmt_2g[bw][tlrs][ch_idx][ntx_idx];
 	}
 	#ifdef CONFIG_IEEE80211_BAND_5GHZ
 	else if (Band == BAND_ON_5G) {
-		if (!is_ww_regd) {
-			lmt = ent->lmt_5g[bw][tlrs - 1][ch_idx][ntx_idx];
-			if (lmt != -MAX_POWER_INDEX)
-				goto release_lock;
-		}
-
-		/* search for min value for WW regd or WW limit */
-		lmt = MAX_POWER_INDEX;
-		head = &rfctl->txpwr_lmt_list;
-		cur = get_next(head);
-		while ((rtw_end_of_queue_search(head, cur)) == _FALSE) {
-			ent = LIST_CONTAINOR(cur, struct txpwr_lmt_ent, list);
-			cur = get_next(cur);
-			if (ent->lmt_5g[bw][tlrs - 1][ch_idx][ntx_idx] != -MAX_POWER_INDEX)
+		if (is_ww_regd) {
+			lmt = MAX_POWER_INDEX;
+			head = &rfctl->txpwr_lmt_list;
+			cur = get_next(head);
+			while ((rtw_end_of_queue_search(head, cur)) == _FALSE) {
+				ent = LIST_CONTAINOR(cur, struct txpwr_lmt_ent, list);
+				cur = get_next(cur);
 				lmt = rtw_min(lmt, ent->lmt_5g[bw][tlrs - 1][ch_idx][ntx_idx]);
-		}
+			}
+		} else
+			lmt = ent->lmt_5g[bw][tlrs - 1][ch_idx][ntx_idx];
 	}
 	#endif
 
@@ -2882,10 +2877,7 @@ exit:
 	return lmt;
 }
 
-/*
-* return txpwr limit diff value
-* MAX_POWER_INDEX is returned when NO limit
-*/
+/* return txpwr limit diff value */
 inline s8 phy_get_txpwr_lmt(_adapter *adapter
 	, const char *regd_name
 	, BAND_TYPE band, enum channel_width bw
@@ -3397,35 +3389,6 @@ static void phy_txpwr_lmt_post_hdl(_adapter *adapter)
 
 	_exit_critical_mutex(&rfctl->txpwr_lmt_mutex, &irqL);
 }
-
-BOOLEAN
-GetS1ByteIntegerFromStringInDecimal(
-	IN		char	*str,
-	IN OUT	s8		*val
-)
-{
-	u8 negative = 0;
-	u16 i = 0;
-
-	*val = 0;
-
-	while (str[i] != '\0') {
-		if (i == 0 && (str[i] == '+' || str[i] == '-')) {
-			if (str[i] == '-')
-				negative = 1;
-		} else if (str[i] >= '0' && str[i] <= '9') {
-			*val *= 10;
-			*val += (str[i] - '0');
-		} else
-			return _FALSE;
-		++i;
-	}
-
-	if (negative)
-		*val = -*val;
-
-	return _TRUE;
-}
 #endif /* CONFIG_TXPWR_LIMIT */
 
 /*
@@ -3454,18 +3417,14 @@ phy_set_tx_power_limit(
 		RTW_INFO("Index of power limit table [regulation %s][band %s][bw %s][rate section %s][ntx %s][chnl %s][val %s]\n"
 			, Regulation, Band, Bandwidth, RateSection, ntx, Channel, PowerLimit);
 
-	if (GetU1ByteIntegerFromStringInDecimal((char *)Channel, &channel) == _FALSE
-		|| GetS1ByteIntegerFromStringInDecimal((char *)PowerLimit, &powerLimit) == _FALSE
+	if (GetU1ByteIntegerFromStringInDecimal((s8 *)Channel, &channel) == _FALSE
+		|| GetU1ByteIntegerFromStringInDecimal((s8 *)PowerLimit, &powerLimit) == _FALSE
 	) {
 		RTW_PRINT("Illegal index of power limit table [ch %s][val %s]\n", Channel, PowerLimit);
 		return;
 	}
 
-	if (powerLimit < -MAX_POWER_INDEX || powerLimit > MAX_POWER_INDEX)
-		RTW_PRINT("Illegal power limit value [ch %s][val %s]\n", Channel, PowerLimit);
-
 	powerLimit = powerLimit > MAX_POWER_INDEX ? MAX_POWER_INDEX : powerLimit;
-	powerLimit = powerLimit < -MAX_POWER_INDEX ? -MAX_POWER_INDEX + 1 : powerLimit;
 
 	if (eqNByte(RateSection, (u8 *)("CCK"), 3))
 		tlrs = TXPWR_LMT_RS_CCK;
@@ -3823,7 +3782,7 @@ void dump_tx_power_ext_info(void *sel, _adapter *adapter)
 	if (regsty->target_tx_pwr_valid == _TRUE)
 		RTW_PRINT_SEL(sel, "target_tx_power: from registry\n");
 	else if (phy_is_tx_power_by_rate_needed(adapter))
-		RTW_PRINT_SEL(sel, "target_tx_power: from power by rate\n"); 
+		RTW_PRINT_SEL(sel, "target_tx_power: from power by rate\n");
 	else
 		RTW_PRINT_SEL(sel, "target_tx_power: unavailable\n");
 
@@ -5016,7 +4975,7 @@ phy_ParsePowerLimitTableFile(
 	struct PHY_DM_STRUCT	*pDM_Odm = &(pHalData->odmpriv);
 	u8	loadingStage = LD_STAGE_EXC_MAPPING;
 	u32	i = 0, forCnt = 0;
-	u8 limitValue = 0, fraction = 0, negative = 0;
+	u8 limitValue = 0, fraction = 0;
 	char	*szLine, *ptmp;
 	char band[10], bandwidth[10], rateSection[10], ntx[10], colNumBuf[10];
 	char **regulation = NULL;
@@ -5216,25 +5175,9 @@ phy_ParsePowerLimitTableFile(
 				/* load the power limit value */
 				cnt = 0;
 				fraction = 0;
-				negative = 0;
 				_rtw_memset((PVOID) powerLimit, 0, 10);
-
-				while ((szLine[i] >= '0' && szLine[i] <= '9') || szLine[i] == '.'
-					|| szLine[i] == '+' || szLine[i] == '-'
-				) {
-					/* try to get valid decimal number */
-					if (szLine[i] == '+' || szLine[i] == '-') {
-						if (cnt != 0) {
-							RTW_ERR("Wrong position for sign '%c'\n", szLine[i]);
-							goto exit;
-						}
-						if (szLine[i] == '-') {
-							negative = 1;
-							++i;
-							continue;
-						}
-
-					} else if (szLine[i] == '.') {
+				while ((szLine[i] >= '0' && szLine[i] <= '9') || szLine[i] == '.') {
+					if (szLine[i] == '.') {
 						if ((szLine[i + 1] >= '0' && szLine[i + 1] <= '9')) {
 							fraction = szLine[i + 1];
 							i += 2;
@@ -5252,41 +5195,17 @@ phy_ParsePowerLimitTableFile(
 				}
 
 				if (powerLimit[0] == '\0') {
-					if (szLine[i] == 'W' && szLine[i + 1] == 'W') {
-						/*
-						* case "WW" assign special value -63
-						* means to get minimal limit in other regulations at same channel
-						*/
-						powerLimit[0] = '-';
-						powerLimit[1] = '6';
-						powerLimit[2] = '3';
-						i += 2;
-					} else if (szLine[i] == 'N' && szLine[i + 1] == 'A') {
-						/*
-						* case "NA" assign special value 63
-						* means no limitation
-						*/
-						powerLimit[0] = '6';
-						powerLimit[1] = '3';
-						i += 2;
-					} else {
-						RTW_ERR("Wrong limit expression \"%c%c\"(%d, %d)\n"
-							, szLine[i], szLine[i + 1], szLine[i], szLine[i + 1]);
-						goto exit;
-					}
+					powerLimit[0] = '6';
+					powerLimit[1] = '3';
+					i += 2;
 				} else {
-					/* transform dicimal value to power index */
 					if (!GetU1ByteIntegerFromStringInDecimal(powerLimit, &limitValue)) {
-						RTW_ERR("Limit \"%s\" is not valid decimal\n", powerLimit);
+						RTW_ERR("Limit \"%s\" is not unsigned decimal\n", powerLimit);
 						goto exit;
 					}
 
 					limitValue *= 2;
 					cnt = 0;
-
-					if (negative)
-						powerLimit[cnt++] = '-';
-
 					if (fraction == '5')
 						++limitValue;
 

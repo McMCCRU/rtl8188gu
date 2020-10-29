@@ -16,6 +16,12 @@
 
 #include <drv_types.h>
 
+/* ********************************************************************************
+ *	Constant.
+ * ********************************************************************************
+ * 2008/11/20 MH For Debug only, RF */
+static RF_SHADOW_T RF_Shadow[RF6052_MAX_PATH][RF6052_MAX_REG];
+
 /**
 * Function:	PHY_CalculateBitShift
 *
@@ -42,13 +48,6 @@ PHY_CalculateBitShift(
 	return i;
 }
 
-
-#ifdef CONFIG_RF_SHADOW_RW
-/* ********************************************************************************
- *	Constant.
- * ********************************************************************************
- * 2008/11/20 MH For Debug only, RF */
-static RF_SHADOW_T RF_Shadow[RF6052_MAX_PATH][RF6052_MAX_REG];
 
 /*
  * ==> RF shadow Operation API Code Section!!!
@@ -254,4 +253,3 @@ PHY_RFShadowRefresh(
 	}
 
 }	/* PHY_RFShadowRead */
-#endif /*CONFIG_RF_SHADOW_RW*/

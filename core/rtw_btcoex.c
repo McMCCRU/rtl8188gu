@@ -12,10 +12,12 @@
  * more details.
  *
  *****************************************************************************/
-#include <drv_types.h>
-#include <hal_data.h>
 #ifdef CONFIG_BT_COEXIST
+
+#include <drv_types.h>
 #include <hal_btcoex.h>
+#include <hal_data.h>
+
 
 void rtw_btcoex_Initialize(PADAPTER padapter)
 {
@@ -25,11 +27,6 @@ void rtw_btcoex_Initialize(PADAPTER padapter)
 void rtw_btcoex_PowerOnSetting(PADAPTER padapter)
 {
 	hal_btcoex_PowerOnSetting(padapter);
-}
-
-void rtw_btcoex_AntInfoSetting(PADAPTER padapter)
-{
-	hal_btcoex_AntInfoSetting(padapter);
 }
 
 void rtw_btcoex_PowerOffSetting(PADAPTER padapter)
@@ -507,7 +504,7 @@ u8 rtw_btcoex_get_ant_div_cfg(PADAPTER padapter)
 	PHAL_DATA_TYPE pHalData;
 
 	pHalData = GET_HAL_DATA(padapter);
-	
+
 	return (pHalData->AntDivCfg == 0) ? _FALSE : _TRUE;
 }
 
@@ -1742,22 +1739,3 @@ void rtw_btcoex_SendScanNotify(PADAPTER padapter, u8 scanType)
 }
 #endif /* CONFIG_BT_COEXIST_SOCKET_TRX */
 #endif /* CONFIG_BT_COEXIST */
-
-void rtw_btcoex_set_ant_info(PADAPTER padapter)
-{
-#ifdef CONFIG_BT_COEXIST
-	PHAL_DATA_TYPE hal = GET_HAL_DATA(padapter);
-
-	if (hal->EEPROMBluetoothCoexist == _TRUE) {
-		u8 bMacPwrCtrlOn = _FALSE;
-
-		rtw_btcoex_AntInfoSetting(padapter);
-		rtw_hal_get_hwreg(padapter, HW_VAR_APFM_ON_MAC, &bMacPwrCtrlOn);
-		if (bMacPwrCtrlOn == _TRUE)
-			rtw_btcoex_PowerOnSetting(padapter);
-	}
-	else
-#endif
-		rtw_btcoex_wifionly_AntInfoSetting(padapter);
-}
-

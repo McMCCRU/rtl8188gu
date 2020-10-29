@@ -17,6 +17,24 @@
 #include <hal_data.h>
 #ifdef CONFIG_RTW_SW_LED
 
+#ifdef CONFIG_LED_CONTROL
+void
+rtw_led_control(
+  _adapter *adapter,
+  LED_CTL_MODE LedAction
+)
+{
+  if (adapter->registrypriv.led_enable)
+  {
+    do
+    {
+      (adapter)->ledpriv.LedControlHandler((adapter), (LedAction));
+    }
+    while(0);
+  }
+}
+#endif //CONFIG_LED_CONTROL
+
 /*
  *	Description:
  *		Implementation of LED blinking behavior.
@@ -1821,17 +1839,9 @@ void BlinkHandler(PLED_USB pLed)
  *		Callback function of LED BlinkTimer,
  *		it just schedules to corresponding BlinkWorkItem/led_blink_hdl
  *   */
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 void BlinkTimerCallback(void *data)
-#else
-void BlinkTimerCallback(struct timer_list *t)
-#endif
 {
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 	PLED_USB	 pLed = (PLED_USB)data;
-#else
-	PLED_USB pLed = from_timer(pLed, t, BlinkTimer);
-#endif
 	_adapter		*padapter = pLed->padapter;
 
 	/* RTW_INFO("%s\n", __FUNCTION__); */
@@ -4148,7 +4158,8 @@ LedControlUSB(
 	/*	return; */
 
 #ifdef CONFIG_CONCURRENT_MODE
-	if (!is_primary_adapter(padapter))
+	/* Only do led action for PRIMARY_ADAPTER */
+	if (padapter->adapter_type != PRIMARY_ADAPTER)
 		return;
 #endif
 
@@ -4270,11 +4281,7 @@ InitLed(
 	pLed->LedPin = LedPin;
 
 	ResetLedStatus(pLed);
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 	rtw_init_timer(&(pLed->BlinkTimer), padapter, BlinkTimerCallback, pLed);
-#else
-	timer_setup(&pLed->BlinkTimer, BlinkTimerCallback, 0);
-#endif
 	_init_workitem(&(pLed->BlinkWorkItem), BlinkWorkItemCallback, pLed);
 }
 

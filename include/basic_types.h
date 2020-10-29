@@ -95,14 +95,9 @@
 	#define UINT u32
 	#define ULONG u32
 
-#if (LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 19))
-typedef _Bool bool;
-
-enum {
-	false	= 0,
-	true	= 1
-};
-#endif
+	#if (LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 19))
+		typedef _Bool bool;
+	#endif
 
 	typedef void (*proc_t)(void *);
 

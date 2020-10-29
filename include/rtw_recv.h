@@ -209,7 +209,6 @@ struct rx_pkt_attrib	{
 	u32 tsfl;
 	u32	MacIDValidEntry[2];	/* 64 bits present 64 entry. */
 	u8	ppdu_cnt;
-	u32 	free_cnt;		/* free run counter */
 	struct phydm_phyinfo_struct phy_info;
 };
 
@@ -395,7 +394,7 @@ struct recv_priv {
 	struct sk_buff_head rx_skb_queue;
 #ifdef CONFIG_RTW_NAPI
 		struct sk_buff_head rx_napi_skb_queue;
-#endif 
+#endif
 #ifdef CONFIG_RX_INDICATE_QUEUE
 	struct task rx_indicate_tasklet;
 	struct ifqueue rx_indicate_queue;
@@ -632,11 +631,7 @@ sint rtw_enqueue_recvbuf(struct recv_buf *precvbuf, _queue *queue);
 struct recv_buf *rtw_dequeue_recvbuf(_queue *queue);
 
 #if defined(CONFIG_80211N_HT) && defined(CONFIG_RECV_REORDERING_CTRL)
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 void rtw_reordering_ctrl_timeout_handler(void *pcontext);
-#else
-void rtw_reordering_ctrl_timeout_handler(struct timer_list *t);
-#endif
 #endif
 
 void rx_query_phy_status(union recv_frame *rframe, u8 *phy_stat);

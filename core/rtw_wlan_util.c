@@ -1568,7 +1568,7 @@ void WMMOnAssocRsp(_adapter *padapter)
 #ifdef CONFIG_WMMPS_STA
 	struct mlme_priv	*pmlmepriv = &(padapter->mlmepriv);
 	struct qos_priv	*pqospriv = &pmlmepriv->qospriv;
-#endif /* CONFIG_WMMPS_STA */	
+#endif /* CONFIG_WMMPS_STA */
 
 	acm_mask = 0;
 
@@ -1694,7 +1694,7 @@ void WMMOnAssocRsp(_adapter *padapter)
 			pxmitpriv->wmm_para_seq[i] = inx[i];
 			RTW_INFO("wmm_para_seq(%d): %d\n", i, pxmitpriv->wmm_para_seq[i]);
 		}
-		
+
 #ifdef CONFIG_WMMPS_STA
 		/* if AP supports UAPSD function, driver must set each uapsd TID to coresponding mac register 0x693 */
 		if (pmlmeinfo->WMM_param.QoS_info & AP_SUPPORTED_UAPSD) {
@@ -2285,7 +2285,7 @@ int rtw_get_bcn_keys(ADAPTER *Adapter, u8 *pframe, u32 packet_len,
 		recv_beacon->encryp_protocol = ENCRYP_PROTOCOL_WPA2;
 		rtw_parse_wpa2_ie(elems.rsn_ie - 2, elems.rsn_ie_len + 2,
 			&recv_beacon->group_cipher, &recv_beacon->pairwise_cipher,
-				  &recv_beacon->is_8021x, NULL);
+				  &recv_beacon->is_8021x);
 	}
 	/* checking WPA secon */
 	else if (elems.wpa_ie && elems.wpa_ie_len) {
@@ -2560,7 +2560,7 @@ int rtw_check_bcn_info(ADAPTER *Adapter, u8 *pframe, u32 packet_len)
 			pbuf = rtw_get_wpa2_ie(&bssid->IEs[12], &wpa_ielen, bssid->IELength - 12);
 
 			if (pbuf && (wpa_ielen > 0)) {
-				rtw_parse_wpa2_ie(pbuf, wpa_ielen + 2, &group_cipher, &pairwise_cipher, &is_8021x, NULL);
+				rtw_parse_wpa2_ie(pbuf, wpa_ielen + 2, &group_cipher, &pairwise_cipher, &is_8021x);
 			}
 		}
 
@@ -3467,92 +3467,6 @@ inline void rtw_macid_map_set(struct macid_bmp *map, u8 id)
 		rtw_warn_on(1);
 }
 
-/* Check the id be set or not in map , if yes , return a none zero value*/
-bool rtw_tim_map_is_set(_adapter *padapter, u8 *map, u8 id)
-{
-
-	int i = 0;
-	int id_range = 7;
-	int map_limit = (((padapter->dvobj)->macid_ctl.num) / 8);
-
-	for (i = 0; i < map_limit; i++) {
-		if (id <= id_range)
-			return map[i] & BIT(id - (i*8));
-
-		id_range = id_range + 8;
-	}
-	return 0;
-}
-
-/* Set the id into map array*/
-void rtw_tim_map_set(_adapter *padapter, u8 *map, u8 id)
-{
-
-	int i = 0;
-	int id_range = 7;
-	int map_limit = (((padapter->dvobj)->macid_ctl.num) / 8);
-
-	for (i = 0; i < map_limit; i++) {
-		if (id <= id_range) {
-			map[i] |= BIT(id - (i*8));
-			return;
-		}
-		id_range = id_range + 8;
-	}
-}
-
-/* Clear the id from map array*/
-void rtw_tim_map_clear(_adapter *padapter, u8 *map, u8 id)
-{
-
-	int i = 0;
-	int id_range = 7;
-	int map_limit = (((padapter->dvobj)->macid_ctl.num) / 8);
-
-	for (i = 0; i < map_limit; i++) {
-		if (id <= id_range) {
-			map[i] &= (~BIT(id - (i*8)));
-			return;
-		}
-		id_range = id_range + 8;
-	}
-}
-
-/* Check have anyone bit be set , if yes return true*/
-bool rtw_tim_map_anyone_be_set(_adapter *padapter, u8 *map)
-{
-
-	int i = 0;
-	int map_limit = (((padapter->dvobj)->macid_ctl.num) / 8);
-
-	for (i = 0; i < map_limit; i++) {
-		if (map[i])
-			return _TRUE;
-	}
-
-	return _FALSE;
-}
-
-/* Check have anyone bit be set exclude bit0 , if yes return true*/
-bool rtw_tim_map_anyone_be_set_exclude_aid0(_adapter *padapter, u8 *map)
-{
-
-	int i = 0;
-	int map_limit = (((padapter->dvobj)->macid_ctl.num) / 8);
-
-	for (i = 0; i < map_limit; i++) {
-		if (i == 0) {
-			if (map[i] & 0xFE)
-				return _TRUE;
-		} else
-			if (map[i])
-				return _TRUE;
-	}
-
-	return _FALSE;
-}
-
-
 /*Record bc's mac-id and sec-cam-id*/
 inline void rtw_iface_bcmc_id_set(_adapter *padapter, u8 mac_id)
 {
@@ -3918,20 +3832,6 @@ inline void rtw_macid_ctl_set_rate_bmp1(struct macid_ctl_t *macid_ctl, u8 id, u3
 	macid_ctl->rate_bmp1[id] = bmp;
 	if (0)
 		RTW_INFO("macid:%u, rate_bmp1:0x%08X\n", id, macid_ctl->rate_bmp1[id]);
-}
-
-inline void rtw_macid_ctl_init_sleep_reg(struct macid_ctl_t *macid_ctl, u16 m0, u16 m1, u16 m2, u16 m3)
-{
-	macid_ctl->reg_sleep_m0 = m0;
-#if (MACID_NUM_SW_LIMIT > 32)
-	macid_ctl->reg_sleep_m1 = m1;
-#endif
-#if (MACID_NUM_SW_LIMIT > 64)
-	macid_ctl->reg_sleep_m2 = m2;
-#endif
-#if (MACID_NUM_SW_LIMIT > 96)
-	macid_ctl->reg_sleep_m3 = m3;
-#endif
 }
 
 inline void rtw_macid_ctl_init(struct macid_ctl_t *macid_ctl)
@@ -4564,7 +4464,11 @@ int rtw_dev_nlo_info_set(struct pno_nlo_info *nlo_info, pno_ssid_t *ssid,
 	source = rtw_zmalloc(2048);
 
 	if (source != NULL) {
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 14, 0))
+		len = kernel_read(fp, source, len, &pos);
+#else
 		len = vfs_read(fp, source, len, &pos);
+#endif
 		rtw_parse_cipher_list(nlo_info, source);
 		rtw_mfree(source, 2048);
 	}

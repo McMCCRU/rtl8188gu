@@ -128,4 +128,7 @@ u8	rtw_vht_mcsmap_to_nss(u8 *pvht_mcs_map);
 void rtw_vht_nss_to_mcsmap(u8 nss, u8 *target_mcs_map, u8 *cur_mcs_map);
 void rtw_vht_ies_attach(_adapter *padapter, WLAN_BSSID_EX *pcur_network);
 void rtw_vht_ies_detach(_adapter *padapter, WLAN_BSSID_EX *pcur_network);
+#ifdef CONFIG_VHT_EXTRAS
+extern const u16 VHT_MCS_DATA_RATE[3][2][30];
+#endif //CONFIG_VHT_EXTRAS
 #endif /* _RTW_VHT_H_ */

@@ -15,7 +15,7 @@
 #ifndef __HAL_DM_ACS_H__
 #define __HAL_DM_ACS_H__
 #ifdef CONFIG_RTW_ACS
-#define RTK_ACS_VERSION	2
+#define RTK_ACS_VERSION	1
 void rtw_acs_version_dump(void *sel, _adapter *adapter);
 extern void phydm_ccx_monitor_trigger(void *p_dm_void, u16 monitor_time);
 extern void phydm_ccx_monitor_result(void *p_dm_void);
@@ -29,11 +29,6 @@ enum ACS_STATE {
 	ACS_ENABLE,
 };
 
-#define ACS_BW_20M	BIT(0)
-#define ACS_BW_40M	BIT(1)
-#define ACS_BW_80M	BIT(2)
-#define ACS_BW_160M	BIT(3)
-
 struct auto_chan_sel {
 	ATOMIC_T state;
 	u8 trigger_ch;
@@ -45,31 +40,10 @@ struct auto_chan_sel {
 	u8 cur_ch_nhm_ratio;
 	u8 best_chan_5g;
 	u8 best_chan_24g;
-	#ifdef CONFIG_RTW_ACS_DBG
-	RT_SCAN_TYPE scan_type;
-	u16 scan_time;
-	u8 igi;
-	u8 bw;
-	#endif
 };
 
 #define rtw_acs_get_best_chan_24g(adapter)		(GET_HAL_DATA(adapter)->acs.best_chan_24g)
 #define rtw_acs_get_best_chan_5g(adapter)		(GET_HAL_DATA(adapter)->acs.best_chan_5g)
-
-#ifdef CONFIG_RTW_ACS_DBG
-#define rtw_is_acs_passiv_scan(adapter)	(((GET_HAL_DATA(adapter)->acs.scan_type) == SCAN_PASSIVE) ? _TRUE : _FALSE)
-
-#define rtw_acs_get_adv_st(adapter)	(GET_HAL_DATA(adapter)->acs.scan_time)
-#define rtw_is_acs_st_valid(adapter)	((GET_HAL_DATA(adapter)->acs.scan_time) ? _TRUE : _FALSE)
-
-#define rtw_acs_get_adv_igi(adapter)	(GET_HAL_DATA(adapter)->acs.igi)
-u8 rtw_is_acs_igi_valid(_adapter *adapter);
-
-#define rtw_acs_get_adv_bw(adapter)	(GET_HAL_DATA(adapter)->acs.bw)
-
-void rtw_acs_adv_setting(_adapter *adapter, RT_SCAN_TYPE scan_type, u16 scan_time, u8 igi, u8 bw);
-void rtw_acs_adv_reset(_adapter *adapter);
-#endif
 
 u8 rtw_acs_get_clm_ratio_by_ch_num(_adapter *adapter, u8 chan);
 u8 rtw_acs_get_clm_ratio_by_ch_idx(_adapter *adapter, u8 ch_idx);

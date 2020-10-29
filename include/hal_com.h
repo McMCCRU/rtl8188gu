@@ -512,6 +512,7 @@ u8 rtw_hal_busagg_qsel_check(_adapter *padapter, u8 pre_qsel, u8 next_qsel);
 
 u8 rtw_get_current_tx_rate(_adapter *padapter, struct sta_info *psta);
 u8 rtw_get_current_tx_sgi(_adapter *padapter, struct sta_info *psta);
+void rtw_hal_construct_NullFunctionData(PADAPTER, u8 *pframe, u32 *pLength, u8 *StaAddr, u8 bQoS, u8 AC, u8 bEosp, u8 bForcePowerSave);
 
 void rtw_hal_set_fw_rsvd_page(_adapter *adapter, bool finished);
 u8 rtw_hal_get_rsvd_page_num(struct _ADAPTER *adapter);
@@ -600,9 +601,6 @@ enum lps_pg_hdl_id {
 #endif
 
 int rtw_hal_get_rsvd_page(_adapter *adapter, u32 page_offset, u32 page_num, u8 *buffer, u32 buffer_size);
-void rtw_hal_construct_beacon(_adapter *padapter, u8 *pframe, u32 *pLength);
-void rtw_hal_construct_NullFunctionData(PADAPTER, u8 *pframe, u32 *pLength,
-				u8 *StaAddr, u8 bQoS, u8 AC, u8 bEosp, u8 bForcePowerSave);
 
 #ifdef CONFIG_WOWLAN
 struct rtl_wow_pattern {
@@ -664,11 +662,4 @@ u8 rtw_ap_bcn_queue_empty_check(_adapter *padapter, u32 txbcn_timer_ms);
 #endif
 #endif /*CONFIG_SWTIMER_BASED_TXBCN*/
 
-void rtw_hal_get_rf_path(struct dvobj_priv *d, enum rf_type *type,
-			 enum bb_path *tx, enum bb_path *rx);
-#ifdef CONFIG_BEAMFORMING
-#ifdef RTW_BEAMFORMING_VERSION_2
-void rtw_hal_beamforming_config_csirate(PADAPTER adapter);
-#endif
-#endif
 #endif /* __HAL_COMMON_H__ */

@@ -112,9 +112,6 @@ enum h2c_cmd {
 	H2C_CUSTOMER_STR_W1 = 0xC6,
 	H2C_CUSTOMER_STR_W2 = 0xC7,
 	H2C_CUSTOMER_STR_W3 = 0xC8,
-#ifdef DBG_FW_DEBUG_MSG_PKT
-	H2C_FW_DBG_MSG_PKT = 0xE1,
-#endif /*DBG_FW_DEBUG_MSG_PKT*/
 	H2C_MAXID,
 };
 
@@ -168,11 +165,6 @@ enum h2c_cmd {
 #if defined(CONFIG_BT_COEXIST) && defined(CONFIG_FW_MULTI_PORT_SUPPORT)
 #define H2C_BTC_WL_PORT_ID_LEN	1
 #endif
-
-#ifdef DBG_FW_DEBUG_MSG_PKT
-	#define H2C_FW_DBG_MSG_PKT_LEN	2
-#endif /*DBG_FW_DEBUG_MSG_PKT*/
-
 #define eq_mac_addr(a, b)						(((a)[0] == (b)[0] && (a)[1] == (b)[1] && (a)[2] == (b)[2] && (a)[3] == (b)[3] && (a)[4] == (b)[4] && (a)[5] == (b)[5]) ? 1 : 0)
 #define cp_mac_addr(des, src)					((des)[0] = (src)[0], (des)[1] = (src)[1], (des)[2] = (src)[2], (des)[3] = (src)[3], (des)[4] = (src)[4], (des)[5] = (src)[5])
 #define cpIpAddr(des, src)					((des)[0] = (src)[0], (des)[1] = (src)[1], (des)[2] = (src)[2], (des)[3] = (src)[3])
@@ -510,11 +502,6 @@ s32 rtw_hal_customer_str_write(_adapter *adapter, const u8 *cs);
 #define SET_H2CCMD_LPSPG_LOC(__pH2CCmd, __Value)	SET_BITS_TO_LE_1BYTE(__pH2CCmd+1, 0, 8, __Value)/*Loc_LPS_PG*/
 #endif
 
-#ifdef DBG_FW_DEBUG_MSG_PKT
-#define SET_H2CCMD_FW_DBG_MSG_PKT_EN(__pH2CCmd, __Value)	SET_BITS_TO_LE_1BYTE(__pH2CCmd, 0, 1, __Value)/*sniffer_dbg_en*/
-#define SET_H2CCMD_RSVDPAGE_LOC_FW_DBG_MSG_PKT(__pH2CCmd, __Value)	SET_BITS_TO_LE_1BYTE((__pH2CCmd)+1, 0, 8, __Value) /*loc_debug_packet*/
-#endif /*DBG_FW_DEBUG_MSG_PKT*/
-
 /* ---------------------------------------------------------------------------------------------------------
  * -------------------------------------------    Structure    --------------------------------------------------
  * --------------------------------------------------------------------------------------------------------- */
@@ -552,9 +539,6 @@ typedef struct _RSVDPAGE_LOC {
 	u8 LocInviteRsp;
 	u8 LocPDRsp;
 #endif /* CONFIG_P2P_WOWLAN */
-#ifdef DBG_FW_DEBUG_MSG_PKT
-	u8 loc_fw_dbg_msg_pkt;
-#endif /*DBG_FW_DEBUG_MSG_PKT*/
 } RSVDPAGE_LOC, *PRSVDPAGE_LOC;
 
 #endif

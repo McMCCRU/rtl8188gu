@@ -155,8 +155,6 @@ enum bt_8723d_1ant_Scoreboard {
 	BT_8723D_1ANT_SCOREBOARD_ONOFF								= BIT(1),
 	BT_8723D_1ANT_SCOREBOARD_SCAN								= BIT(2),
 	BT_8723D_1ANT_SCOREBOARD_UNDERTEST							= BIT(3),
-	BT_8723D_1ANT_SCOREBOARD_RXGAIN								= BIT(4),
-	BT_8723D_1ANT_SCOREBOARD_DKTOPP2M							= BIT(5),
 	BT_8723D_1ANT_SCOREBOARD_WLBUSY								= BIT(6)
 };
 
@@ -230,7 +228,6 @@ struct coex_sta_8723d_1ant {
 	boolean				under_lps;
 	boolean				under_ips;
 	u32					specific_pkt_period_cnt;
-	u8					connect_ap_period_cnt;
 	u32					high_priority_tx;
 	u32					high_priority_rx;
 	u32					low_priority_tx;

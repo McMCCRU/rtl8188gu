@@ -389,25 +389,6 @@ int rtw_recv_napi_poll(struct napi_struct *napi, int budget)
 
 	return work_done;
 }
-
-#ifdef CONFIG_RTW_NAPI_DYNAMIC
-void dynamic_napi_th_chk (_adapter *adapter)
-{
-
-	if (adapter->registrypriv.en_napi) {
-		struct dvobj_priv *dvobj;
-		struct registry_priv *registry;
-	
-		dvobj = adapter_to_dvobj(adapter);
-		registry = &adapter->registrypriv;
-		if (dvobj->traffic_stat.cur_rx_tp > registry->napi_threshold)
-			dvobj->en_napi_dynamic = 1;
-		else
-			dvobj->en_napi_dynamic = 0;
-	}
-
-}
-#endif /* CONFIG_RTW_NAPI_DYNAMIC */
 #endif /* CONFIG_RTW_NAPI */
 
 void rtw_os_recv_indicate_pkt(_adapter *padapter, _pkt *pkt, union recv_frame *rframe)
@@ -506,13 +487,6 @@ void rtw_os_recv_indicate_pkt(_adapter *padapter, _pkt *pkt, union recv_frame *r
 		pkt->ip_summed = CHECKSUM_NONE; /* CONFIG_TCP_CSUM_OFFLOAD_RX */
 
 #ifdef CONFIG_RTW_NAPI
-#ifdef CONFIG_RTW_NAPI_DYNAMIC
-		if (!skb_queue_empty(&precvpriv->rx_napi_skb_queue)
-			&& !adapter_to_dvobj(padapter)->en_napi_dynamic			
-			)
-			napi_recv(padapter, RTL_NAPI_WEIGHT);
-#endif
-
 		if (pregistrypriv->en_napi
 			#ifdef CONFIG_RTW_NAPI_DYNAMIC
 			&& adapter_to_dvobj(padapter)->en_napi_dynamic

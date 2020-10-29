@@ -249,26 +249,23 @@ struct sta_info {
 	uint qos_option;
 	u16 hwseq;
 
-#ifdef CONFIG_RTW_80211K
-	u8 rm_en_cap[5];
-	u8 rm_diag_token;
-#endif /* CONFIG_RTW_80211K */
-
 	uint	ieee8021x_blocked;	/* 0: allowed, 1:blocked */
 	uint	dot118021XPrivacy; /* aes, tkip... */
 	union Keytype	dot11tkiptxmickey;
 	union Keytype	dot11tkiprxmickey;
 	union Keytype	dot118021x_UncstKey;
 	union pn48		dot11txpn;			/* PN48 used for Unicast xmit */
-	union pn48		dot11rxpn;			/* PN48 used for Unicast recv. */
 #ifdef CONFIG_GTK_OL
 	u8 kek[RTW_KEK_LEN];
 	u8 kck[RTW_KCK_LEN];
 	u8 replay_ctr[RTW_REPLAY_CTR_LEN];
 #endif /* CONFIG_GTK_OL */
 #ifdef CONFIG_IEEE80211W
+	union pn48		dot11wtxpn;			/* PN48 used for Unicast mgmt xmit. */
 	_timer dot11w_expire_timer;
 #endif /* CONFIG_IEEE80211W */
+	union pn48		dot11rxpn;			/* PN48 used for Unicast recv. */
+
 
 	u8	bssrateset[16];
 	u32	bssratelen;
@@ -583,8 +580,8 @@ struct	sta_priv {
 	 */
 	struct sta_info *sta_aid[NUM_STA];
 
-	u8 *sta_dz_bitmap;/* only support maic_id num - 1 stations, station aid bitmap for sleeping sta. */
-	u8 *tim_bitmap;/* only support maic_id num - 1 stations, aid=maic_id num-1 mapping bit1~bit(maic_id num-1) */
+	u16 sta_dz_bitmap;/* only support 15 stations, staion aid bitmap for sleeping sta. */
+	u16 tim_bitmap;/* only support 15 stations, aid=0~15 mapping bit0~bit15	 */
 
 	u16 max_num_sta;
 
@@ -601,13 +598,12 @@ struct	sta_priv {
 #ifdef CONFIG_ATMEL_RC_PATCH
 	u8 atmel_rc_pattern[6];
 #endif
-	u8 c2h_sta_mac[ETH_ALEN];
-	u8 c2h_adapter_id;
+	struct sta_info *c2h_sta;
 	struct submit_ctx *gotc2h;
 };
 
 
-__inline static u32 wifi_mac_hash(const u8 *mac)
+__inline static u32 wifi_mac_hash(u8 *mac)
 {
 	u32 x;
 
@@ -632,10 +628,10 @@ extern u32	_rtw_free_sta_priv(struct sta_priv *pstapriv);
 int rtw_stainfo_offset(struct sta_priv *stapriv, struct sta_info *sta);
 struct sta_info *rtw_get_stainfo_by_offset(struct sta_priv *stapriv, int offset);
 
-extern struct sta_info *rtw_alloc_stainfo(struct	sta_priv *pstapriv, const u8 *hwaddr);
+extern struct sta_info *rtw_alloc_stainfo(struct	sta_priv *pstapriv, u8 *hwaddr);
 extern u32	rtw_free_stainfo(_adapter *padapter , struct sta_info *psta);
 extern void rtw_free_all_stainfo(_adapter *padapter);
-extern struct sta_info *rtw_get_stainfo(struct sta_priv *pstapriv, const u8 *hwaddr);
+extern struct sta_info *rtw_get_stainfo(struct sta_priv *pstapriv, u8 *hwaddr);
 extern u32 rtw_init_bcmc_stainfo(_adapter *padapter);
 extern struct sta_info *rtw_get_bcmc_stainfo(_adapter *padapter);
 

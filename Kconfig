@@ -1,0 +1,5 @@
+config RTL8710B
+	tristate "Realtek 8818GU USB WiFi"
+	depends on USB
+	---help---
+	  Help message of RTL8818GU

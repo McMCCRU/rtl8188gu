@@ -311,7 +311,6 @@ struct aoac_report {
 };
 
 struct pwrctrl_priv {
-	_adapter *padapter;
 	_pwrlock	lock;
 	_pwrlock	check_32k_lock;
 	volatile u8 rpwm; /* requested power state for fw */
@@ -326,7 +325,7 @@ struct pwrctrl_priv {
 
 #ifdef CONFIG_WMMPS_STA
 	u8 wmm_smart_ps;
-#endif /* CONFIG_WMMPS_STA */	
+#endif /* CONFIG_WMMPS_STA */
 
 	u32	alives;
 	_workitem cpwm_event;
@@ -464,6 +463,16 @@ struct pwrctrl_priv {
 	u8 blpspg_info_up;
 #endif
 	u8 current_lps_hw_port_id;
+
+#ifdef CONFIG_RTW_CFGVEDNOR_LLSTATS
+	systime radio_on_start_time;
+	systime pwr_saving_start_time;
+	u32 pwr_saving_time;
+	u32 on_time;
+	u32 tx_time;
+	u32 rx_time;
+#endif /* CONFIG_RTW_CFGVEDNOR_LLSTATS */
+
 };
 
 #define rtw_get_ips_mode_req(pwrctl) \

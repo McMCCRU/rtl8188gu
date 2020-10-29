@@ -22,6 +22,7 @@
 
 extern unsigned char MCS_rate_2R[16];
 extern unsigned char MCS_rate_1R[16];
+extern void process_wmmps_data(_adapter *padapter, union recv_frame *precv_frame);
 
 inline void rtw_tdls_set_link_established(_adapter *adapter, bool en)
 {
@@ -979,7 +980,7 @@ s32 rtw_tdls_do_ch_sw(_adapter *padapter, struct sta_info *ptdls_sta, u8 chnl_ty
 
 	/* set mac_id sleep before channel switch */
 	rtw_hal_macid_sleep(padapter, ptdls_sta->cmn.mac_id);
-	
+
 #ifdef CONFIG_TDLS_CH_SW_BY_DRV
 	set_channel_bwmode(padapter, channel, channel_offset, bwmode);
 	ret = _SUCCESS;
@@ -1855,7 +1856,7 @@ sint On_TDLS_Setup_Req(_adapter *padapter, union recv_frame *precv_frame, struct
 		ptdls_sta = rtw_alloc_stainfo(pstapriv, psa);
 		if (ptdls_sta == NULL)
 			goto exit;
-		
+
 		ptdlsinfo->sta_cnt++;
 	}
 	else {

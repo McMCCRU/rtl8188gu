@@ -55,6 +55,8 @@ odm_sign_conversion(
 	u32 total_bit
 );
 
+u16 phydm_find_intrvl(void *dm_void, u16 val, u16 *threshold, u16 th_len);
+
 void
 phydm_seq_sorting(
 	void	*p_dm_void,
@@ -64,7 +66,7 @@ phydm_seq_sorting(
 	u8	seq_length
 );
 
-u32 
+u32
 odm_convert_to_db(
 	u32	 value
 );

@@ -20,7 +20,7 @@
 /*============================================================*/
 /*include files*/
 /*============================================================*/
-
+#include "halrf/halrf_psd.h"
 
 
 /*============================================================*/
@@ -52,7 +52,7 @@
 #define IQK_VERSION_8703B	"0x05"
 #define IQK_VERSION_8710B	"0x01"
 #define IQK_VERSION_8723D	"0x02"
-#define IQK_VERSION_8822B	"0x2e"
+#define IQK_VERSION_8822B	"0x2f"
 #define IQK_VERSION_8821C	"0x23"
 
 /*LCK version*/
@@ -123,13 +123,17 @@ enum halrf_cmninfo_init_e {
 	HALRF_CMNINFO_FW_VER,
 	HALRF_CMNINFO_RFK_FORBIDDEN,
 	HALRF_CMNINFO_IQK_SEGMENT,
-	HALRF_CMNINFO_RATE_INDEX
+	HALRF_CMNINFO_RATE_INDEX,
+	HALRF_CMNINFO_MP_PSD_POINT,
+	HALRF_CMNINFO_MP_PSD_START_POINT,
+	HALRF_CMNINFO_MP_PSD_STOP_POINT,
+	HALRF_CMNINFO_MP_PSD_AVERAGE
 };
 
 enum halrf_cmninfo_hook_e {
 	HALRF_CMNINFO_CON_TX,
 	HALRF_CMNINFO_SINGLE_TONE,
-	HALRF_CMNINFO_CARRIER_SUPPRESSION,	
+	HALRF_CMNINFO_CARRIER_SUPPRESSION,
 	HALRF_CMNINFO_MP_RATE_INDEX
 };
 
@@ -161,6 +165,9 @@ struct _hal_rf_ {
 
 	u8		*p_mp_rate_index;
 	u32		p_rate_index;
+#if (DM_ODM_SUPPORT_TYPE & ODM_WIN)
+	struct	_halrf_psd_data	halrf_psd_data;
+#endif
 };
 
 /*============================================================*/
@@ -274,7 +281,7 @@ phydm_get_iqk_cfir(
 	boolean debug
 );
 
-void 
+void
 halrf_iqk_xym_read(
 	void *p_dm_void,
 	u8 path,

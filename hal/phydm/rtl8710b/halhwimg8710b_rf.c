@@ -642,5 +642,140 @@ odm_read_and_config_mp_8710b_txxtaltrack(
 	odm_move_memory(p_dm, p_rf_calibrate_info->delta_swing_table_xtal_n, g_delta_swing_table_xtal_mp_n_txxtaltrack_8710b, DELTA_SWINGIDX_SIZE);
 }
 
-#endif /* end of HWIMG_SUPPORT*/
+/******************************************************************************
+ *                           txpowertrack_qfn48m_smic.TXT
+ ******************************************************************************/
 
+#ifdef CONFIG_8710B_QFN48M_SMIC
+const u8 delta_swingidx_mp_2gb_n_txpwrtrk_qfn48m_smic_8710b[]    = {
+	0, 0, 0, 2, 2, 3, 3, 4, 4, 4, 4, 5, 5, 6, 6, 7, 7,
+	 7, 7, 8, 8, 9, 9, 10, 10, 10, 11, 11, 11, 11};
+const u8 delta_swingidx_mp_2gb_p_txpwrtrk_qfn48m_smic_8710b[]    = {
+	0, 0, 0, 1, 2, 3, 3, 4, 4, 4, 5, 5, 6, 6, 7, 8, 9, 9,
+	 10, 10, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11};
+const u8 delta_swingidx_mp_2ga_n_txpwrtrk_qfn48m_smic_8710b[]    = {
+	0, 1, 1, 2, 2, 2, 3, 3, 4, 4, 5, 5, 5, 6, 6, 7, 7,
+	 7, 8, 8, 9, 9, 10, 10, 10, 10, 10, 10, 10, 10};
+const u8 delta_swingidx_mp_2ga_p_txpwrtrk_qfn48m_smic_8710b[]    = {
+	0, 0, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 5, 5, 5, 6,
+	 6, 6, 7, 7, 8, 9, 9, 9, 9, 9, 9, 9, 9, 9};
+const u8 delta_swingidx_mp_2g_cck_b_n_txpwrtrk_qfn48m_smic_8710b[] = {
+	0, 0, 1, 1, 2, 4, 4, 5, 5, 6, 7, 7, 7, 8, 8, 9, 10, 10,
+	 11, 11, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12};
+const u8 delta_swingidx_mp_2g_cck_b_p_txpwrtrk_qfn48m_smic_8710b[] = {
+	0, 0, 1, 1, 2, 2, 2, 3, 4, 5, 6, 6, 7, 7, 8, 9, 9, 10,
+	 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11};
+const u8 delta_swingidx_mp_2g_cck_a_n_txpwrtrk_qfn48m_smic_8710b[] = {
+	0, 0, 1, 2, 2, 2, 2, 3, 3, 4, 4, 5, 5, 5, 6, 6,
+	 7, 7, 8, 8, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9};
+const u8 delta_swingidx_mp_2g_cck_a_p_txpwrtrk_qfn48m_smic_8710b[] = {
+	0, 0, 1, 1, 2, 2, 2, 3, 3, 4, 4, 4, 5, 5, 6, 6, 6,
+	 7, 7, 8, 9, 10, 12, 12, 12, 12, 12, 12, 12, 12};
+#endif
+
+void
+odm_read_and_config_mp_8710b_txpowertrack_qfn48m_smic(struct PHY_DM_STRUCT *dm)
+{
+#ifdef CONFIG_8710B_QFN48M_SMIC
+
+struct odm_rf_calibration_structure *cali_info = &(dm->rf_calibrate_info);
+
+PHYDM_DBG(dm, ODM_COMP_INIT, ("===> ODM_ReadAndConfig_MP_mp_8710b\n"));
+
+odm_move_memory(dm, cali_info->delta_swing_table_idx_2ga_p,
+		(void *)delta_swingidx_mp_2ga_p_txpwrtrk_qfn48m_smic_8710b,
+		DELTA_SWINGIDX_SIZE);
+odm_move_memory(dm, cali_info->delta_swing_table_idx_2ga_n,
+		(void *)delta_swingidx_mp_2ga_n_txpwrtrk_qfn48m_smic_8710b,
+		DELTA_SWINGIDX_SIZE);
+odm_move_memory(dm, cali_info->delta_swing_table_idx_2gb_p,
+		(void *)delta_swingidx_mp_2gb_p_txpwrtrk_qfn48m_smic_8710b,
+		DELTA_SWINGIDX_SIZE);
+odm_move_memory(dm, cali_info->delta_swing_table_idx_2gb_n,
+		(void *)delta_swingidx_mp_2gb_n_txpwrtrk_qfn48m_smic_8710b,
+		DELTA_SWINGIDX_SIZE);
+
+odm_move_memory(dm, cali_info->delta_swing_table_idx_2g_cck_a_p,
+		(void *)delta_swingidx_mp_2g_cck_a_p_txpwrtrk_qfn48m_smic_8710b,
+		DELTA_SWINGIDX_SIZE);
+odm_move_memory(dm, cali_info->delta_swing_table_idx_2g_cck_a_n,
+		(void *)delta_swingidx_mp_2g_cck_a_n_txpwrtrk_qfn48m_smic_8710b,
+		DELTA_SWINGIDX_SIZE);
+odm_move_memory(dm, cali_info->delta_swing_table_idx_2g_cck_b_p,
+		(void *)delta_swingidx_mp_2g_cck_b_p_txpwrtrk_qfn48m_smic_8710b,
+		DELTA_SWINGIDX_SIZE);
+odm_move_memory(dm, cali_info->delta_swing_table_idx_2g_cck_b_n,
+		(void *)delta_swingidx_mp_2g_cck_b_n_txpwrtrk_qfn48m_smic_8710b,
+		DELTA_SWINGIDX_SIZE);
+#endif
+}
+
+/******************************************************************************
+ *                           txpowertrack_qfn48m_umc.TXT
+ ******************************************************************************/
+
+#ifdef CONFIG_8710B_QFN48M_UMC
+const u8 delta_swingidx_mp_2gb_n_txpwrtrk_qfn48m_umc_8710b[]    = {
+	0, 0, 0, 2, 2, 3, 3, 4, 4, 4, 4, 5, 5, 6, 6, 7, 7,
+	 7, 7, 8, 8, 9, 9, 10, 10, 10, 11, 11, 11, 11};
+const u8 delta_swingidx_mp_2gb_p_txpwrtrk_qfn48m_umc_8710b[]    = {
+	0, 0, 0, 1, 2, 3, 3, 4, 4, 4, 5, 5, 6, 6, 7, 8, 9, 9,
+	 10, 10, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11};
+const u8 delta_swingidx_mp_2ga_n_txpwrtrk_qfn48m_umc_8710b[]    = {
+	0, 1, 1, 2, 2, 2, 3, 3, 4, 4, 5, 5, 5, 6, 6, 7, 7,
+	 7, 8, 8, 9, 9, 10, 10, 10, 10, 10, 10, 10, 10};
+const u8 delta_swingidx_mp_2ga_p_txpwrtrk_qfn48m_umc_8710b[]    = {
+	0, 0, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 5, 5, 5, 6,
+	 6, 6, 7, 7, 8, 9, 9, 9, 9, 9, 9, 9, 9, 9};
+const u8 delta_swingidx_mp_2g_cck_b_n_txpwrtrk_qfn48m_umc_8710b[] = {
+	0, 0, 1, 1, 2, 4, 4, 5, 5, 6, 7, 7, 7, 8, 8, 9, 10, 10,
+	 11, 11, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12};
+const u8 delta_swingidx_mp_2g_cck_b_p_txpwrtrk_qfn48m_umc_8710b[] = {
+	0, 0, 1, 1, 2, 2, 2, 3, 4, 5, 6, 6, 7, 7, 8, 9, 9, 10,
+	 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11};
+const u8 delta_swingidx_mp_2g_cck_a_n_txpwrtrk_qfn48m_umc_8710b[] = {
+	0, 0, 1, 2, 2, 2, 2, 3, 3, 4, 4, 5, 5, 5, 6, 6,
+	 7, 7, 8, 8, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9};
+const u8 delta_swingidx_mp_2g_cck_a_p_txpwrtrk_qfn48m_umc_8710b[] = {
+	0, 0, 1, 1, 2, 2, 2, 3, 3, 4, 4, 4, 5, 5, 6, 6, 6,
+	 7, 7, 8, 9, 10, 12, 12, 12, 12, 12, 12, 12, 12};
+#endif
+
+void
+odm_read_and_config_mp_8710b_txpowertrack_qfn48m_umc(struct PHY_DM_STRUCT *dm)
+{
+#ifdef CONFIG_8710B_QFN48M_UMC
+
+struct odm_rf_calibration_structure *cali_info = &(dm->rf_calibrate_info);
+
+PHYDM_DBG(dm, ODM_COMP_INIT, ("===> ODM_ReadAndConfig_MP_mp_8710b\n"));
+
+odm_move_memory(dm, cali_info->delta_swing_table_idx_2ga_p,
+		(void *)delta_swingidx_mp_2ga_p_txpwrtrk_qfn48m_umc_8710b,
+		DELTA_SWINGIDX_SIZE);
+odm_move_memory(dm, cali_info->delta_swing_table_idx_2ga_n,
+		(void *)delta_swingidx_mp_2ga_n_txpwrtrk_qfn48m_umc_8710b,
+		DELTA_SWINGIDX_SIZE);
+odm_move_memory(dm, cali_info->delta_swing_table_idx_2gb_p,
+		(void *)delta_swingidx_mp_2gb_p_txpwrtrk_qfn48m_umc_8710b,
+		DELTA_SWINGIDX_SIZE);
+odm_move_memory(dm, cali_info->delta_swing_table_idx_2gb_n,
+		(void *)delta_swingidx_mp_2gb_n_txpwrtrk_qfn48m_umc_8710b,
+		DELTA_SWINGIDX_SIZE);
+
+odm_move_memory(dm, cali_info->delta_swing_table_idx_2g_cck_a_p,
+		(void *)delta_swingidx_mp_2g_cck_a_p_txpwrtrk_qfn48m_umc_8710b,
+		DELTA_SWINGIDX_SIZE);
+odm_move_memory(dm, cali_info->delta_swing_table_idx_2g_cck_a_n,
+		(void *)delta_swingidx_mp_2g_cck_a_n_txpwrtrk_qfn48m_umc_8710b,
+		DELTA_SWINGIDX_SIZE);
+odm_move_memory(dm, cali_info->delta_swing_table_idx_2g_cck_b_p,
+		(void *)delta_swingidx_mp_2g_cck_b_p_txpwrtrk_qfn48m_umc_8710b,
+		DELTA_SWINGIDX_SIZE);
+odm_move_memory(dm, cali_info->delta_swing_table_idx_2g_cck_b_n,
+		(void *)delta_swingidx_mp_2g_cck_b_n_txpwrtrk_qfn48m_umc_8710b,
+		DELTA_SWINGIDX_SIZE);
+#endif
+}
+
+#endif /* end of HWIMG_SUPPORT*/

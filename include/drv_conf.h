@@ -373,12 +373,6 @@
 	#endif
 #endif
 
-#ifdef CONFIG_RTW_80211K
-	#ifndef CONFIG_RTW_ACS
-		#define CONFIG_RTW_ACS
-	#endif
-#endif /*CONFIG_RTW_80211K*/
-
 #ifdef DBG_CONFIG_ERROR_RESET
 #ifndef CONFIG_IPS
 #define CONFIG_IPS

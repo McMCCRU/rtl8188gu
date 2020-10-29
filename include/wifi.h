@@ -446,7 +446,7 @@ enum WIFI_REG_DOMAIN {
 	  (addr[4] == 0xff) && (addr[5] == 0xff)) ? _TRUE : _FALSE \
 	)
 
-__inline static int IS_MCAST(const u8 *da)
+__inline static int IS_MCAST(unsigned char *da)
 {
 	if ((*da) & 0x01)
 		return _TRUE;
@@ -600,22 +600,19 @@ static inline int IsFrameTypeData(unsigned char *pframe)
 #define _CHLGETXT_IE_			16
 #define _SUPPORTED_CH_IE_		36
 #define _CH_SWTICH_ANNOUNCE_	37	/* Secondary Channel Offset */
-#define	_MEAS_REQ_IE_		38
-#define	_MEAS_RSP_IE_		39
 #define _RSN_IE_2_				48
 #define _SSN_IE_1_					221
 #define _ERPINFO_IE_			42
 #define _EXT_SUPPORTEDRATES_IE_	50
 
 #define _HT_CAPABILITY_IE_			45
-#define _MDIE_					54
-#define _FTIE_					55
+#define _MDIE_						54
+#define _FTIE_						55
 #define _TIMEOUT_ITVL_IE_			56
 #define _SRC_IE_				59
 #define _HT_EXTRA_INFO_IE_			61
 #define _HT_ADD_INFO_IE_			61 /* _HT_EXTRA_INFO_IE_ */
-#define _WAPI_IE_				68
-#define _EID_RRM_EN_CAP_IE_			70
+#define _WAPI_IE_					68
 
 
 /* #define EID_BSSCoexistence			72 */ /* 20/40 BSS Coexistence
@@ -1021,6 +1018,44 @@ typedef enum _HT_CAP_AMPDU_DENSITY {
 #define IEEE80211_HT_IE_NON_GF_STA_PRSNT	0x0004
 #define IEEE80211_HT_IE_NON_HT_STA_PRSNT	0x0010
 
+#ifdef CONFIG_VHT_EXTRAS
+/* 802.11ac VHT Capabilities */
+#define IEEE80211_VHT_CAP_MAX_MPDU_LENGTH_3895                  0x00000000
+#define IEEE80211_VHT_CAP_MAX_MPDU_LENGTH_7991                  0x00000001
+#define IEEE80211_VHT_CAP_MAX_MPDU_LENGTH_11454                 0x00000002
+#define IEEE80211_VHT_CAP_SUPP_CHAN_WIDTH_160MHZ                0x00000004
+#define IEEE80211_VHT_CAP_SUPP_CHAN_WIDTH_160_80PLUS80MHZ       0x00000008
+#define IEEE80211_VHT_CAP_SUPP_CHAN_WIDTH_MASK                  0x0000000C
+#define IEEE80211_VHT_CAP_RXLDPC                                0x00000010
+#define IEEE80211_VHT_CAP_SHORT_GI_80                           0x00000020
+#define IEEE80211_VHT_CAP_SHORT_GI_160                          0x00000040
+#define IEEE80211_VHT_CAP_TXSTBC                                0x00000080
+#define IEEE80211_VHT_CAP_RXSTBC_1                              0x00000100
+#define IEEE80211_VHT_CAP_RXSTBC_2                              0x00000200
+#define IEEE80211_VHT_CAP_RXSTBC_3                              0x00000300
+#define IEEE80211_VHT_CAP_RXSTBC_4                              0x00000400
+#define IEEE80211_VHT_CAP_RXSTBC_MASK                           0x00000700
+#define IEEE80211_VHT_CAP_SU_BEAMFORMER_CAPABLE                 0x00000800
+#define IEEE80211_VHT_CAP_SU_BEAMFORMEE_CAPABLE                 0x00001000
+#define IEEE80211_VHT_CAP_BEAMFORMEE_STS_SHIFT                  13
+#define IEEE80211_VHT_CAP_BEAMFORMEE_STS_MASK                   \
+                (7 << IEEE80211_VHT_CAP_BEAMFORMEE_STS_SHIFT)
+#define IEEE80211_VHT_CAP_SOUNDING_DIMENSIONS_SHIFT             16
+#define IEEE80211_VHT_CAP_SOUNDING_DIMENSIONS_MASK              \
+                (7 << IEEE80211_VHT_CAP_SOUNDING_DIMENSIONS_SHIFT)
+#define IEEE80211_VHT_CAP_MU_BEAMFORMER_CAPABLE                 0x00080000
+#define IEEE80211_VHT_CAP_MU_BEAMFORMEE_CAPABLE                 0x00100000
+#define IEEE80211_VHT_CAP_VHT_TXOP_PS                           0x00200000
+#define IEEE80211_VHT_CAP_HTC_VHT                               0x00400000
+#define IEEE80211_VHT_CAP_MAX_A_MPDU_LENGTH_EXPONENT_SHIFT      23
+#define IEEE80211_VHT_CAP_MAX_A_MPDU_LENGTH_EXPONENT_MASK       \
+                (7 << IEEE80211_VHT_CAP_MAX_A_MPDU_LENGTH_EXPONENT_SHIFT)
+#define IEEE80211_VHT_CAP_VHT_LINK_ADAPTATION_VHT_UNSOL_MFB     0x08000000
+#define IEEE80211_VHT_CAP_VHT_LINK_ADAPTATION_VHT_MRQ_MFB       0x0c000000
+#define IEEE80211_VHT_CAP_RX_ANTENNA_PATTERN                    0x10000000
+#define IEEE80211_VHT_CAP_TX_ANTENNA_PATTERN                    0x20000000
+#endif //CONFIG_VHT_EXTRAS
+
 /* block-ack parameters */
 #define IEEE80211_ADDBA_PARAM_POLICY_MASK 0x0002
 #define IEEE80211_ADDBA_PARAM_TID_MASK 0x003C
@@ -1032,10 +1067,9 @@ typedef enum _HT_CAP_AMPDU_DENSITY {
  * A-PMDU buffer sizes
  * According to IEEE802.11n spec size varies from 8K to 64K (in powers of 2)
  */
-#define IEEE80211_MIN_AMPDU_BUF 0x8
-#ifndef IEEE80211_MAX_AMPDU_BUF
-#define IEEE80211_MAX_AMPDU_BUF 0x40
-#endif
+//#define IEEE80211_MIN_AMPDU_BUF 0x8
+//#define IEEE80211_MAX_AMPDU_BUF 0x40
+
 
 /* Spatial Multiplexing Power Save Modes */
 #define WLAN_HT_CAP_SM_PS_STATIC		0

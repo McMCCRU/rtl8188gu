@@ -18,6 +18,21 @@
 #ifndef __INC_MP_RF_HW_IMG_8710B_H
 #define __INC_MP_RF_HW_IMG_8710B_H
 
+/* Please add following compiler flags definition (#define CONFIG_XXX_DRV_DIS)
+ * into driver source code to reduce code size if necessary.
+ * #define CONFIG_8710B_QFN48M_SMIC_DRV_DIS
+ * #define CONFIG_8710B_QFN48M_UMC_DRV_DIS
+ */
+
+#define CONFIG_8710B_QFN48M_SMIC
+#ifdef CONFIG_8710B_QFN48M_SMIC_DRV_DIS
+    #undef CONFIG_8710B_QFN48M_SMIC
+#endif
+
+#define CONFIG_8710B_QFN48M_UMC
+#ifdef CONFIG_8710B_QFN48M_UMC_DRV_DIS
+    #undef CONFIG_8710B_QFN48M_UMC
+#endif
 
 /******************************************************************************
 *                           radioa.TXT
@@ -79,6 +94,23 @@ odm_read_and_config_mp_8710b_txxtaltrack(/* tc: Test Chip, mp: mp Chip*/
 );
 u32	odm_get_version_mp_8710b_txxtaltrack(void);
 
+/******************************************************************************
+ *                           txpowertrack_qfn48m_smic.TXT
+ ******************************************************************************/
+
+/* tc: Test Chip, mp: mp Chip*/
+void
+odm_read_and_config_mp_8710b_txpowertrack_qfn48m_smic(struct PHY_DM_STRUCT *dm);
+u32 odm_get_version_mp_8710b_txpowertrack_qfn48m_smic(void);
+
+/******************************************************************************
+ *                           txpowertrack_qfn48m_umc.TXT
+ ******************************************************************************/
+
+/* tc: Test Chip, mp: mp Chip*/
+void
+odm_read_and_config_mp_8710b_txpowertrack_qfn48m_umc(struct PHY_DM_STRUCT *dm);
+u32 odm_get_version_mp_8710b_txpowertrack_qfn48m_umc(void);
+
 #endif
 #endif /* end of HWIMG_SUPPORT*/
-

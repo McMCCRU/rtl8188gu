@@ -19,5 +19,4 @@ void rtw_btcoex_wifionly_switchband_notify(PADAPTER padapter);
 void rtw_btcoex_wifionly_scan_notify(PADAPTER padapter);
 void rtw_btcoex_wifionly_hw_config(PADAPTER padapter);
 void rtw_btcoex_wifionly_initialize(PADAPTER padapter);
-void rtw_btcoex_wifionly_AntInfoSetting(PADAPTER padapter);
 #endif

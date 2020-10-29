@@ -759,7 +759,7 @@ odm_iq_calibrate(
 {
 	struct _ADAPTER	*adapter = p_dm->adapter;
 	struct _IQK_INFORMATION	*p_iqk_info = &p_dm->IQK_info;
-	
+
 	RT_TRACE(COMP_SCAN, ODM_DBG_LOUD, ("=>%s\n" , __FUNCTION__));
 
 #if (DM_ODM_SUPPORT_TYPE == ODM_WIN)

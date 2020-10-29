@@ -79,7 +79,6 @@ typedef struct _ADAPTER _adapter, ADAPTER, *PADAPTER;
 #include <rtw_xmit.h>
 #include <xmit_osdep.h>
 #include <rtw_recv.h>
-#include <rtw_rm.h>
 
 #ifdef CONFIG_BEAMFORMING
 	#include <rtw_beamforming.h>
@@ -147,7 +146,9 @@ typedef struct _ADAPTER _adapter, ADAPTER, *PADAPTER;
 #include <rtw_android.h>
 
 #include <rtw_btcoex_wifionly.h>
-#include <rtw_btcoex.h>
+#ifdef CONFIG_BT_COEXIST
+	#include <rtw_btcoex.h>
+#endif /* CONFIG_BT_COEXIST */
 
 #ifdef CONFIG_MCC_MODE
 	#include <rtw_mcc.h>
@@ -438,6 +439,10 @@ struct registry_priv {
 
 #ifdef CONFIG_FW_OFFLOAD_PARAM_INIT
 	u8 fw_param_init;
+#endif
+
+#ifdef CONFIG_LED_CONTROL
+  u8 led_enable;
 #endif
 };
 
@@ -767,18 +772,6 @@ struct macid_ctl_t {
 	u32 rate_bmp1[MACID_NUM_SW_LIMIT];
 
 	struct sta_info *sta[MACID_NUM_SW_LIMIT]; /* corresponding stainfo when macid is not shared */
-
-	/* macid sleep registers */
-	u16 reg_sleep_m0;
-#if (MACID_NUM_SW_LIMIT > 32)
-	u16 reg_sleep_m1;
-#endif
-#if (MACID_NUM_SW_LIMIT > 64)
-	u16 reg_sleep_m2;
-#endif
-#if (MACID_NUM_SW_LIMIT > 96)
-	u16 reg_sleep_m3;
-#endif
 };
 
 /* used for rf_ctl_t.rate_bmp_cck_ofdm */
@@ -879,8 +872,8 @@ struct rf_ctl_t {
 
 #define RTW_CAC_STOPPED 0
 #define IS_CAC_STOPPED(rfctl) ((rfctl)->cac_end_time == RTW_CAC_STOPPED)
-#define IS_CH_WAITING(rfctl) (!IS_CAC_STOPPED(rfctl) && rtw_time_after((rfctl)->cac_end_time, rtw_get_current_time()))
-#define IS_UNDER_CAC(rfctl) (IS_CH_WAITING(rfctl) && rtw_time_after(rtw_get_current_time(), (rfctl)->cac_start_time))
+#define IS_CH_WAITING(rfctl) (!IS_CAC_STOPPED(rfctl) && time_after((rfctl)->cac_end_time, rtw_get_current_time()))
+#define IS_UNDER_CAC(rfctl) (IS_CH_WAITING(rfctl) && time_after(rtw_get_current_time(), (rfctl)->cac_start_time))
 
 #ifdef CONFIG_MBSSID_CAM
 #define TOTAL_MBID_CAM_NUM	8
@@ -948,10 +941,7 @@ struct dvobj_priv {
 #ifdef CONFIG_SDIO_INDIRECT_ACCESS
 	_mutex sd_indirect_access_mutex;
 #endif
-
-#ifdef CONFIG_SYSON_INDIRECT_ACCESS
 	_mutex syson_indirect_access_mutex;	/* System On Reg R/W */
-#endif
 
 	unsigned char	oper_channel; /* saved channel info when call set_channel_bw */
 	unsigned char	oper_bwmode;
@@ -1017,7 +1007,7 @@ struct dvobj_priv {
 	_timer txbcn_timer;
 #endif
 	_timer dynamic_chk_timer; /* dynamic/periodic check timer */
-	
+
 #ifdef CONFIG_RTW_NAPI_DYNAMIC
 	u8 en_napi_dynamic;
 #endif /* CONFIG_RTW_NAPI_DYNAMIC */
@@ -1305,10 +1295,6 @@ struct _ADAPTER {
 	struct	mlme_ext_priv mlmeextpriv;
 	struct	cmd_priv	cmdpriv;
 	struct	evt_priv	evtpriv;
-
-#ifdef CONFIG_RTW_80211K
-	struct	rm_priv		rmpriv;
-#endif
 	/* struct	io_queue	*pio_queue; */
 	struct	io_priv	iopriv;
 	struct	xmit_priv	xmitpriv;
@@ -1577,7 +1563,6 @@ struct _ADAPTER {
 #endif
 
 #define adapter_to_rfctl(adapter) dvobj_to_rfctl(adapter_to_dvobj((adapter)))
-#define adapter_to_macidctl(adapter) dvobj_to_macidctl(adapter_to_dvobj((adapter)))
 
 #define adapter_mac_addr(adapter) (adapter->mac_addr)
 #define adapter_to_chset(adapter) (adapter_to_rfctl((adapter))->channel_set)

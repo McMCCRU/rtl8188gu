@@ -638,7 +638,11 @@ ODM_sleep_us(u32	us)
 void
 odm_set_timer(
 	struct PHY_DM_STRUCT		*p_dm,
+#if defined (LINUX_VERSION_CODE) && (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0))
+	struct legacy_timer_emu		*p_timer,
+#else
 	struct timer_list		*p_timer,
+#endif //defined (LINUX_VERSION_CODE) && (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0))
 	u32			ms_delay
 )
 {
@@ -655,25 +659,49 @@ odm_set_timer(
 
 }
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 void
 odm_initialize_timer(
-	struct PHY_DM_STRUCT			*p_dm_odm,
+	struct PHY_DM_STRUCT			*p_dm,
+#if defined (LINUX_VERSION_CODE) && (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0))
+	struct legacy_timer_emu			*p_timer,
+#else
 	struct timer_list			*p_timer,
+#endif //defined (LINUX_VERSION_CODE) && (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0))
 	void	*call_back_func,
 	void				*p_context,
 	const char			*sz_id
 )
 {
-	struct _ADAPTER *adapter = p_dm_odm->adapter;
-	_init_timer(p_timer, adapter->pnetdev, call_back_func, p_dm_odm);
-}
+#if (DM_ODM_SUPPORT_TYPE & ODM_AP)
+	init_timer(p_timer);
+	p_timer->function = call_back_func;
+	p_timer->data = (unsigned long)p_dm;
+	/*mod_timer(p_timer, jiffies+RTL_MILISECONDS_TO_JIFFIES(10));	*/
+#elif (DM_ODM_SUPPORT_TYPE & ODM_CE) && defined(DM_ODM_CE_MAC80211)
+	init_timer(p_timer);
+	p_timer->function = call_back_func;
+	p_timer->data = (unsigned long)p_dm;
+	/*mod_timer(p_timer, jiffies+RTL_MILISECONDS_TO_JIFFIES(10));	*/
+#elif (DM_ODM_SUPPORT_TYPE & ODM_CE)
+	struct _ADAPTER *adapter = p_dm->adapter;
+
+	_init_timer(p_timer, adapter->pnetdev, call_back_func, p_dm);
+#elif (DM_ODM_SUPPORT_TYPE & ODM_WIN)
+	struct _ADAPTER *adapter = p_dm->adapter;
+
+	PlatformInitializeTimer(adapter, p_timer, (RT_TIMER_CALL_BACK)call_back_func, p_context, sz_id);
 #endif
+}
+
 
 void
 odm_cancel_timer(
 	struct PHY_DM_STRUCT		*p_dm,
+#if defined (LINUX_VERSION_CODE) && (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0))
+	struct legacy_timer_emu		*p_timer
+#else
 	struct timer_list		*p_timer
+#endif //defined (LINUX_VERSION_CODE) && (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0))
 )
 {
 #if (DM_ODM_SUPPORT_TYPE & ODM_AP)
@@ -692,7 +720,11 @@ odm_cancel_timer(
 void
 odm_release_timer(
 	struct PHY_DM_STRUCT		*p_dm,
+#if defined (LINUX_VERSION_CODE) && (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0))
+	struct legacy_timer_emu		*p_timer
+#else
 	struct timer_list		*p_timer
+#endif //defined (LINUX_VERSION_CODE) && (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0))
 )
 {
 #if (DM_ODM_SUPPORT_TYPE & (ODM_AP))
@@ -957,14 +989,14 @@ phydm_c2H_content_parsing(
 #endif
 	u8	extend_c2h_sub_id = 0;
 	u8	find_c2h_cmd = true;
-	
+
 	if ((c2h_cmd_len > 12) || (c2h_cmd_len == 0)) {
 		dbg_print("[Warning] Error C2H ID=%d, len=%d\n", c2h_cmd_id, c2h_cmd_len);
-		
+
 		find_c2h_cmd = false;
 		return find_c2h_cmd;
 	}
-	
+
 	switch (c2h_cmd_id) {
 	case PHYDM_C2H_DBG:
 		phydm_fw_trace_handler(p_dm, tmp_buf, c2h_cmd_len);
@@ -1259,7 +1291,7 @@ phydm_add_interrupt_mask_handler(
 	#if IS_EXIST_PCI || IS_EXIST_EMBEDDED
 	GET_HAL_INTERFACE(priv)->AddInterruptMaskHandler(priv, interrupt_type);
 	#endif
-	
+
 #elif (DM_ODM_SUPPORT_TYPE == ODM_CE)
 #endif
 }
@@ -1342,7 +1374,7 @@ phydm_get_txbf_en(
 		p_dm_bdc_table->num_txbfee_client++;
 	} else
 		p_dm_bdc_table->w_bfee_client[i] = false; /* AP act as BFer */
-	
+
 	if (beamform_cap & (BEAMFORMEE_CAP_HT_EXPLICIT | BEAMFORMEE_CAP_VHT_SU)) {
 		p_dm_bdc_table->w_bfer_client[i] = true; /* AP act as BFee */
 		p_dm_bdc_table->num_txbfer_client++;

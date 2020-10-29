@@ -30,7 +30,7 @@ struct drp_rtl8822b_struct {
 	enum bb_path	path_judge;
 	u16	path_a_cck_fa;
 	u16	path_b_cck_fa;
-	
+
 };
 #endif
 

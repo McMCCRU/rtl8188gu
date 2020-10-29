@@ -48,8 +48,8 @@ const char *const glbt_info_src_8723b_1ant[] = {
 	"BT Info[bt auto report]",
 };
 
-u32	glcoex_ver_date_8723b_1ant = 20171106;
-u32	glcoex_ver_8723b_1ant = 0x6c;
+u32	glcoex_ver_date_8723b_1ant = 20170728;
+u32	glcoex_ver_8723b_1ant = 0x6b;
 u32	glcoex_ver_btdesired_8723b_1ant = 0x6b;
 
 /* ************************************************************
@@ -5111,20 +5111,14 @@ void ex_halbtc8723b1ant_halt_notify(IN struct btc_coexist *btcoexist)
 void ex_halbtc8723b1ant_pnp_notify(IN struct btc_coexist *btcoexist,
 				   IN u8 pnp_state)
 {
-	if ((pnp_state == BTC_WIFI_PNP_SLEEP) || (pnp_state == BTC_WIFI_PNP_SLEEP_KEEP_ANT)) {
+	if (BTC_WIFI_PNP_SLEEP == pnp_state) {
 		BTC_SPRINTF(trace_buf, BT_TMP_BUF_SIZE,
 			    "[BTCoex], Pnp notify to SLEEP\n");
 		BTC_TRACE(trace_buf);
 
 		halbtc8723b1ant_ps_tdma(btcoexist, NORMAL_EXEC, false, 0);
-
-		if	(pnp_state == BTC_WIFI_PNP_SLEEP_KEEP_ANT)
-			halbtc8723b1ant_set_ant_path(btcoexist, BTC_ANT_PATH_PTA,
-							FORCE_EXEC, false, false);
-		else
 		halbtc8723b1ant_set_ant_path(btcoexist, BTC_ANT_PATH_BT,
 					     FORCE_EXEC, false, true);
-
 		halbtc8723b1ant_coex_table_with_type(btcoexist, NORMAL_EXEC, 2);
 
 		/* Sinda 20150819, workaround for driver skip leave IPS/LPS to speed up sleep time. */

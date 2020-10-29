@@ -826,7 +826,7 @@ int rtw_mp_disable_bt_coexist(struct net_device *dev,
 	u32 bt_coexist;
 
 	_rtw_memset(input, 0, sizeof(input));
-	
+
 	if (copy_from_user(input, wrqu->data.pointer, wrqu->data.length))
 		return -EFAULT;
 
@@ -2029,7 +2029,6 @@ int rtw_mp_pwrbyrate(struct net_device *dev,
 	if (copy_from_user(extra, wrqu->data.pointer, wrqu->data.length))
 		return -EFAULT;
 
-	*(extra + wrqu->data.length) = '\0';
 	if (strncmp(extra, "off", 3) == 0 && strlen(extra) < 4) {
 		padapter->registrypriv.RegEnableTxPowerByRate = 0;
 		sprintf(extra, "Turn off Tx Power by Rate\n");
@@ -2117,14 +2116,9 @@ int rtw_efuse_mask_file(struct net_device *dev,
 	if (rtw_is_file_readable(rtw_efuse_mask_file_path) == _TRUE) {
 		RTW_INFO("%s do rtw_efuse_mask_file_read = %s! ,sizeof maskfileBuffer %zu\n", __func__, rtw_efuse_mask_file_path, sizeof(maskfileBuffer));
 		Status = rtw_efuse_file_read(padapter, rtw_efuse_mask_file_path, maskfileBuffer, sizeof(maskfileBuffer));
-		if (Status == _TRUE) {
+		if (Status == _TRUE)
 			padapter->registrypriv.bFileMaskEfuse = _TRUE;
-			sprintf(extra, "efuse mask file read OK\n");
-		} else {
-			padapter->registrypriv.bFileMaskEfuse = _FALSE;
-			sprintf(extra, "read efuse mask file FAIL\n");
-			RTW_INFO("%s rtw_efuse_file_read mask fail!\n", __func__);
-		}
+		sprintf(extra, "efuse mask file read OK\n");
 	} else {
 		padapter->registrypriv.bFileMaskEfuse = _FALSE;
 		sprintf(extra, "efuse mask file readable FAIL\n");
@@ -2236,7 +2230,7 @@ int rtw_mp_SetBT(struct net_device *dev,
 		return -EFAULT;
 
 	*(extra + wrqu->data.length) = '\0';
-	
+
 	if (strlen(extra) < 1)
 		return -EFAULT;
 

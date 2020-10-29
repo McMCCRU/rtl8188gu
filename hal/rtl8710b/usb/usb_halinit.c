@@ -1630,7 +1630,6 @@ hal_EfuseParseLEDSetting(
 	IN BOOLEAN AutoloadFail
 )
 {
-#if 0
 	struct led_priv *pledpriv = &(padapter->ledpriv);
 	HAL_DATA_TYPE *pHalData = GET_HAL_DATA(padapter);
 
@@ -1657,7 +1656,6 @@ hal_EfuseParseLEDSetting(
 #else /* HW LED */
 	pledpriv->LedStrategy = HW_LED;
 #endif /*CONFIG_RTW_SW_LED */
-#endif
 }
 
 static void
@@ -1827,7 +1825,7 @@ static u8 read_adapter_info(PADAPTER padapter)
 
 	/* Efuse_InitSomeVar(padapter); */
 
-	/*hal_efuse_cellselection(padapter); 20171207 remove by Peter*/ 
+	/*hal_efuse_cellselection(padapter); 20171207 remove by Peter*/
 
 	/* We need to define the RF type after all PROM value is recognized. */
 	read_rftype(padapter);
@@ -2530,6 +2528,10 @@ static u8 rtl8710bu_ps_func(PADAPTER padapter, HAL_INTF_PS_FUNC efunc_id, u8 *va
 	}
 	return bResult;
 }
+
+#ifdef CONFIG_SUPPORT_USB_INT
+extern void rtl8710bu_interrupt_handler(_adapter *padapter, u16 pkt_len, u8 *pbuf);
+#endif
 
 void rtl8710bu_set_hal_ops(PADAPTER padapter)
 {

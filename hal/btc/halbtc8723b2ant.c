@@ -45,8 +45,8 @@ const char *const glbt_info_src_8723b_2ant[] = {
 	"BT Info[bt auto report]",
 };
 
-u32	glcoex_ver_date_8723b_2ant = 20171106;
-u32	glcoex_ver_8723b_2ant = 0x4f;
+u32	glcoex_ver_date_8723b_2ant = 20170728;
+u32	glcoex_ver_8723b_2ant = 0x4e;
 u32	glcoex_ver_btdesired_8723b_2ant = 0x4e;
 
 /* ************************************************************
@@ -1115,7 +1115,7 @@ void halbtc8723b2ant_coex_table_with_type(IN struct btc_coexist *btcoexist,
 	case 17:
 		halbtc8723b2ant_coex_table(btcoexist, force_exec,
 				   0xffff55ff, 0xfafa5afa, 0xffffff, 0x3);
-		break;		
+		break;
 	default:
 		break;
 	}
@@ -4996,7 +4996,7 @@ void ex_halbtc8723b2ant_pnp_notify(IN struct btc_coexist *btcoexist,
 	BTC_SPRINTF(trace_buf, BT_TMP_BUF_SIZE, "[BTCoex], Pnp notify\n");
 	BTC_TRACE(trace_buf);
 
-	if ((pnp_state == BTC_WIFI_PNP_SLEEP) || (pnp_state == BTC_WIFI_PNP_SLEEP_KEEP_ANT)) {
+	if (BTC_WIFI_PNP_SLEEP == pnp_state) {
 		BTC_SPRINTF(trace_buf, BT_TMP_BUF_SIZE,
 			    "[BTCoex], Pnp notify to SLEEP\n");
 		BTC_TRACE(trace_buf);

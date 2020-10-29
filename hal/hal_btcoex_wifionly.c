@@ -162,14 +162,6 @@ void hal_btcoex_wifionly_initlizevariables(PADAPTER padapter)
 #endif
 
 	pwifionly_haldata->customer_id = CUSTOMER_NORMAL;
-}
-
-void hal_btcoex_wifionly_AntInfoSetting(PADAPTER padapter)
-{
-	struct wifi_only_cfg		*pwifionlycfg = &GLBtCoexistWifiOnly;
-	struct wifi_only_haldata	*pwifionly_haldata = &pwifionlycfg->haldata_info;
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
-
 	pwifionly_haldata->efuse_pg_antnum = pHalData->EEPROMBluetoothAntNum;
 	pwifionly_haldata->efuse_pg_antpath = pHalData->ant_path;
 	pwifionly_haldata->rfe_type = pHalData->rfe_type;

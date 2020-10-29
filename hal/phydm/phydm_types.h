@@ -132,7 +132,7 @@ enum rt_spinlock_type {
 	#define	s64		s8Byte
 
 	#define	timer_list	_RT_TIMER
-	
+
 
 #elif (DM_ODM_SUPPORT_TYPE == ODM_AP)
 	#include "../typedef.h"

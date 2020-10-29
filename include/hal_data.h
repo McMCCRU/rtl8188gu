@@ -96,6 +96,21 @@ typedef enum _RT_AMPDU_BRUST_MODE {
 #define MAX_BASE_NUM_IN_PHY_REG_PG_2_4G			10 /* CCK:1, OFDM:1, HT:4, VHT:4 */
 #define MAX_BASE_NUM_IN_PHY_REG_PG_5G			9 /* OFDM:1, HT:4, VHT:4 */
 
+
+/* ###### duplicate code,will move to ODM ######### */
+/* #define IQK_MAC_REG_NUM		4 */
+/* #define IQK_ADDA_REG_NUM		16 */
+
+/* #define IQK_BB_REG_NUM			10 */
+#define IQK_BB_REG_NUM_92C	9
+#define IQK_BB_REG_NUM_92D	10
+#define IQK_BB_REG_NUM_test	6
+
+#define IQK_Matrix_Settings_NUM_92D	(1+24+21)
+
+/* #define HP_THERMAL_NUM		8 */
+/* ###### duplicate code,will move to ODM ######### */
+
 #ifdef RTW_RX_AGGREGATION
 typedef enum _RX_AGG_MODE {
 	RX_AGG_DISABLE,
@@ -385,6 +400,7 @@ typedef struct hal_com_data {
 	u16	ForcedDataRate;	/* Force Data Rate. 0: Auto, 0x02: 1M ~ 0x6C: 54M. */
 	u8	bDumpRxPkt;
 	u8	bDumpTxPkt;
+	u8	bDisableTXPowerTraining;
 	u8	dis_turboedca;
 
 
@@ -770,7 +786,6 @@ typedef struct hal_com_data HAL_DATA_TYPE, *PHAL_DATA_TYPE;
 #define get_hal_mac_addr(adapter)				(GET_HAL_DATA(adapter)->EEPROMMACAddr)
 #define is_boot_from_eeprom(adapter)			(GET_HAL_DATA(adapter)->EepromOrEfuse)
 #define rtw_get_hw_init_completed(adapter)		(GET_HAL_DATA(adapter)->hw_init_completed)
-#define rtw_set_hw_init_completed(adapter, cmp)	(GET_HAL_DATA(adapter)->hw_init_completed = cmp)
 #define rtw_is_hw_init_completed(adapter)		(GET_HAL_DATA(adapter)->hw_init_completed == _TRUE)
 #endif
 

@@ -625,7 +625,7 @@ odm_txpowertracking_thermal_meter_init(
 			p_rf_calibrate_info->default_ofdm_index = 28;						 	   /*OFDM: -1dB*/
 			p_rf_calibrate_info->default_cck_index = 28;							/*CCK:   -6dB*/
 			/* JJ ADD 20161014 */
-		} else if (p_dm->support_ic_type == ODM_RTL8710B) {			
+		} else if (p_dm->support_ic_type == ODM_RTL8710B) {
 			p_rf_calibrate_info->default_ofdm_index = 28;					/*OFDM: -1dB*/
 			p_rf_calibrate_info->default_cck_index = 28;					/*CCK:   -6dB*/
 		} else {

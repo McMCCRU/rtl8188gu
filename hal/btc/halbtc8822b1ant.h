@@ -157,7 +157,6 @@ enum bt_8822b_1ant_ext_ant_switch_pos_type {
 	BT_8822B_1ANT_EXT_ANT_SWITCH_TO_WLG			= 0x1,
 	BT_8822B_1ANT_EXT_ANT_SWITCH_TO_WLA			= 0x2,
 	BT_8822B_1ANT_EXT_ANT_SWITCH_TO_NOCARE		= 0x3,
-	BT_8822B_1ANT_EXT_ANT_SWITCH_TO_S0WLG_S1BT	= 0x4,
 	BT_8822B_1ANT_EXT_ANT_SWITCH_TO_MAX
 };
 
@@ -172,19 +171,17 @@ enum bt_8822b_1ant_phase {
 	BT_8822B_1ANT_PHASE_2G_FREERUN_ANT_WL		= 0x7,
 	BT_8822B_1ANT_PHASE_2G_FREERUN_ANT_BT		= 0x8,
 	BT_8822B_1ANT_PHASE_MCC_DUALBAND_RUNTIME	= 0x9,
-	BT_8822B_1ANT_PHASE_2G_FREERUN_ANT_S0WLS1BT	= 0xa,
 	BT_8822B_1ANT_PHASE_MAX
 };
 
 /*ADD SCOREBOARD TO FIX BT LPS 32K ISSUE WHILE WL BUSY*/
 enum bt_8822b_1ant_Scoreboard {
-	BT_8822B_1ANT_SCOREBOARD_ACTIVE					= BIT(0),
-	BT_8822B_1ANT_SCOREBOARD_ONOFF					= BIT(1),
-	BT_8822B_1ANT_SCOREBOARD_SCAN					= BIT(2),
-	BT_8822B_1ANT_SCOREBOARD_UNDERTEST				= BIT(3),
-	BT_8822B_1ANT_SCOREBOARD_RXGAIN					= BIT(4),
-	BT_8822B_1ANT_SCOREBOARD_WLBUSY					= BIT(6),
-	BT_8822B_1ANT_SCOREBOARD_EXTFEM					= BIT(8),
+	BT_8822B_1ANT_SCOREBOARD_ACTIVE                            = BIT(0),
+	BT_8822B_1ANT_SCOREBOARD_ONOFF                             = BIT(1),
+	BT_8822B_1ANT_SCOREBOARD_SCAN                               = BIT(2),
+	BT_8822B_1ANT_SCOREBOARD_UNDERTEST							= BIT(3),
+	BT_8822B_1ANT_SCOREBOARD_RXGAIN								= BIT(4),
+	BT_8822B_1ANT_SCOREBOARD_WLBUSY                          = BIT(6)
 };
 
 struct coex_dm_8822b_1ant {
@@ -261,7 +258,6 @@ struct coex_sta_8822b_1ant {
 	boolean					a2dp_exist;
 	boolean					hid_exist;
 	boolean					pan_exist;
-	boolean					msft_mr_exist;
 	u8					num_of_profile;
 
 	boolean					under_lps;
@@ -377,8 +373,6 @@ struct coex_sta_8822b_1ant {
 
 	boolean				is_bt_opp_exist;
 	boolean				gl_wifi_busy;
-
-	boolean				is_mimo_ps;
 };
 
 struct rfe_type_8822b_1ant {

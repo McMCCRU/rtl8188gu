@@ -102,8 +102,7 @@ int usbctrl_vendorreq(struct intf_hdl *pintfhdl, u8 request, u16 value, u16 inde
 			reqtype =  REALTEK_USB_VENQT_WRITE;
 			_rtw_memcpy(pIo_buf, pdata, len);
 		}
-//RTW_INFO("Peter : usbctrl_vendorreq : pipe = %u request=0x%x  request_type=0x%x  addr=0x%x  index=%u  len=%u  data=0x%x \n", 
-	//pipe, request, reqtype, value, index, len, *(u32 *)pdata);
+
 		status = rtw_usb_control_msg(udev, pipe, request, reqtype, value, index, pIo_buf, len, RTW_USB_CONTROL_MSG_TIMEOUT);
 
 		if (status == len) {  /* Success this control transfer. */

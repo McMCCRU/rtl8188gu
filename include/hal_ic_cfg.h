@@ -191,9 +191,9 @@
 		#define DBG_RX_DFRAME_RAW_DATA
 	#endif /* DBG_RX_DFRAME_RAW_DATA */
 
-	#ifndef RTW_IQK_FW_OFFLOAD
+	/*#ifndef RTW_IQK_FW_OFFLOAD
 		#define RTW_IQK_FW_OFFLOAD
-	#endif /* RTW_IQK_FW_OFFLOAD */
+	#endif*/ /* RTW_IQK_FW_OFFLOAD */
 	#define CONFIG_ADVANCE_OTA
 #endif /* CONFIG_RTL8822B */
 
@@ -222,17 +222,8 @@
 	#ifndef RTW_IQK_FW_OFFLOAD
 		#define RTW_IQK_FW_OFFLOAD
 	#endif /* RTW_IQK_FW_OFFLOAD */
-	/*#define CONFIG_AMPDU_PRETX_CD*/
+	#define CONFIG_AMPDU_PRETX_CD
 	/*#define DBG_PRE_TX_HANG*/
-	/*
-	 * Beamforming related definition
-	 */
-	/* Beamforming mechanism is on driver not phydm, always disable it */
-	#define BEAMFORMING_SUPPORT				0
-	/* Only support new beamforming mechanism */
-	#ifdef CONFIG_BEAMFORMING
-		#define RTW_BEAMFORMING_VERSION_2
-	#endif /* CONFIG_BEAMFORMING */
 #endif
 
 #endif /*__HAL_IC_CFG_H__*/

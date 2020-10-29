@@ -57,9 +57,6 @@ void rtw_os_read_port(_adapter *padapter, struct recv_buf *precvbuf);
 #include <linux/netdevice.h>	/* struct napi_struct */
 
 int rtw_recv_napi_poll(struct napi_struct *, int budget);
-#ifdef CONFIG_RTW_NAPI_DYNAMIC
-void dynamic_napi_th_chk (_adapter *adapter);
-#endif /* CONFIG_RTW_NAPI_DYNAMIC */
 #endif /* CONFIG_RTW_NAPI */
 #endif /* PLATFORM_LINUX */
 

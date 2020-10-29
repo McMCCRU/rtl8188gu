@@ -81,15 +81,15 @@ MODULE_PARM_DESC(rtw_ips_mode, "The default IPS mode");
 module_param(rtw_lps_level, int, 0644);
 MODULE_PARM_DESC(rtw_lps_level, "The default LPS level");
 
-/* LPS: 
+/* LPS:
  * rtw_smart_ps = 0 => TX: pwr bit = 1, RX: PS_Poll
  * rtw_smart_ps = 1 => TX: pwr bit = 0, RX: PS_Poll
  * rtw_smart_ps = 2 => TX: pwr bit = 0, RX: NullData with pwr bit = 0
 */
 int rtw_smart_ps = 2;
 
-#ifdef CONFIG_WMMPS_STA	
-/* WMMPS: 
+#ifdef CONFIG_WMMPS_STA
+/* WMMPS:
  * rtw_smart_ps = 0 => Only for fw test
  * rtw_smart_ps = 1 => Refer to Beacon's TIM Bitmap
  * rtw_smart_ps = 2 => Don't refer to Beacon's TIM Bitmap
@@ -764,6 +764,16 @@ uint rtw_wakeup_event = RTW_WAKEUP_EVENT;
 module_param(rtw_wakeup_event, uint, 0644);
 #endif
 
+#ifdef CONFIG_LED_CONTROL
+#ifdef CONFIG_LED_ENABLE
+int rtw_led_enable = 1;
+#else
+int rtw_led_enable = 0;
+#endif //CONFIG_LED_ENABLE
+module_param(rtw_led_enable, int, 0644);
+MODULE_PARM_DESC(rtw_led_enable,"Enable status LED");
+#endif //CONFIG_LED_CONTROL
+
 void rtw_regsty_load_target_tx_power(struct registry_priv *regsty)
 {
 	int path, rs;
@@ -1125,6 +1135,11 @@ uint loadparam(_adapter *padapter)
 #ifdef CONFIG_AP_MODE
 	registry_par->bmc_tx_rate = rtw_bmc_tx_rate;
 #endif
+
+#ifdef CONFIG_LED_CONTROL
+  registry_par->led_enable = (u8)rtw_led_enable;
+#endif //CONFIG_LED_CONTROL
+
 	return status;
 }
 
@@ -1265,16 +1280,15 @@ unsigned int rtw_classify8021d(struct sk_buff *skb)
 
 
 static u16 rtw_select_queue(struct net_device *dev, struct sk_buff *skb
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 2, 0))
-			    ,struct net_device *sb_dev
-#elif (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0))
-			    ,struct net_device *sb_dev
-                            ,select_queue_fallback_t fallback
-#elif (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 14, 0))
-			    ,void *unused
-                            ,select_queue_fallback_t fallback
-#elif (LINUX_VERSION_CODE == KERNEL_VERSION(3, 13, 0))
-			    , void *accel
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 13, 0)
+  #if LINUX_VERSION_CODE < KERNEL_VERSION(4, 19, 0)
+	  , void *accel_priv
+  #else
+    , struct net_device *sb_dev
+  #endif
+  #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 14, 0) && LINUX_VERSION_CODE < KERNEL_VERSION(5, 2, 0))
+	  , select_queue_fallback_t fallback
+  #endif
 #endif
 )
 {
@@ -2004,10 +2018,7 @@ struct dvobj_priv *devobj_init(void)
 #ifdef CONFIG_SDIO_INDIRECT_ACCESS
 	_rtw_mutex_init(&pdvobj->sd_indirect_access_mutex);
 #endif
-
-#ifdef CONFIG_SYSON_INDIRECT_ACCESS
 	_rtw_mutex_init(&pdvobj->syson_indirect_access_mutex);
-#endif
 
 #ifdef CONFIG_RTW_CUSTOMER_STR
 	_rtw_mutex_init(&pdvobj->customer_str_mutex);
@@ -2037,11 +2048,7 @@ struct dvobj_priv *devobj_init(void)
 #endif
 #endif
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 	rtw_init_timer(&(pdvobj->dynamic_chk_timer), NULL, rtw_dynamic_check_timer_handlder, pdvobj);
-#else
-	timer_setup(&pdvobj->dynamic_chk_timer, rtw_dynamic_check_timer_handlder, 0);
-#endif
 
 #ifdef CONFIG_MCC_MODE
 	_rtw_mutex_init(&(pdvobj->mcc_objpriv.mcc_mutex));
@@ -2085,10 +2092,7 @@ void devobj_deinit(struct dvobj_priv *pdvobj)
 #ifdef CONFIG_SDIO_INDIRECT_ACCESS
 	_rtw_mutex_free(&pdvobj->sd_indirect_access_mutex);
 #endif
-
-#ifdef CONFIG_SYSON_INDIRECT_ACCESS
 	_rtw_mutex_free(&pdvobj->syson_indirect_access_mutex);
-#endif
 
 	rtw_macid_ctl_deinit(&pdvobj->macid_ctl);
 	_rtw_spinlock_free(&pdvobj->cam_ctl.lock);
@@ -2273,9 +2277,6 @@ u8 rtw_init_drv_sw(_adapter *padapter)
 	}
 
 	padapter->stapriv.padapter = padapter;
-	padapter->stapriv.sta_dz_bitmap = rtw_zmalloc(((padapter->dvobj)->macid_ctl.num) / 8);
-	padapter->stapriv.tim_bitmap = rtw_zmalloc(((padapter->dvobj)->macid_ctl.num) / 8);
-
 	padapter->setband = WIFI_FREQUENCY_BAND_AUTO;
 	padapter->fix_rate = 0xFF;
 	padapter->power_offset = 0;
@@ -2335,10 +2336,6 @@ u8 rtw_init_drv_sw(_adapter *padapter)
 
 #ifdef CONFIG_RTW_REPEATER_SON
 	init_rtw_rson_data(adapter_to_dvobj(padapter));
-#endif
-
-#ifdef CONFIG_RTW_80211K
-	rtw_init_rm(padapter);
 #endif
 
 exit:
@@ -2448,10 +2445,6 @@ u8 rtw_free_drv_sw(_adapter *padapter)
 #ifdef CONFIG_TDLS
 	/* rtw_free_tdls_info(&padapter->tdlsinfo); */
 #endif /* CONFIG_TDLS */
-
-#ifdef CONFIG_RTW_80211K
-	rtw_free_rm_priv(padapter);
-#endif
 
 	rtw_free_cmd_priv(&padapter->cmdpriv);
 
@@ -3253,6 +3246,15 @@ netdev_open_normal_process:
 		#endif
 	}
 #endif
+
+#ifdef CONFIG_RTW_CFGVEDNOR_LLSTATS
+	pwrctrlpriv->radio_on_start_time = rtw_get_current_time();
+	pwrctrlpriv->pwr_saving_start_time = rtw_get_current_time();
+	pwrctrlpriv->pwr_saving_time = 0;
+	pwrctrlpriv->on_time = 0;
+	pwrctrlpriv->tx_time = 0;
+	pwrctrlpriv->rx_time = 0;
+#endif /* CONFIG_RTW_CFGVEDNOR_LLSTATS */
 
 	RTW_INFO("-871x_drv - drv_open, bup=%d\n", padapter->bup);
 

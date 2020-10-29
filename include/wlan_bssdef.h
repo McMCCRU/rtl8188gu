@@ -521,12 +521,7 @@ typedef struct _WLAN_PHY_INFO {
 	u8	SignalStrength;/* (in percentage) */
 	u8	SignalQuality;/* (in percentage) */
 	u8	Optimum_antenna;  /* for Antenna diversity */
-	u8	is_cck_rate;	/* 1:cck_rate */
-	s8	rx_snr[4];
-#ifdef CONFIG_RTW_80211K
-	u32	free_cnt; 	/* freerun counter */
-	u8	rm_en_cap[5];
-#endif
+	u8	Reserved_0;
 } WLAN_PHY_INFO, *PWLAN_PHY_INFO;
 
 typedef struct _WLAN_BCN_INFO {

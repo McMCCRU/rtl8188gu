@@ -24,6 +24,12 @@
 /*	Commented by Albert 20101105
  *	Increase the scanning timeout because of increasing the SURVEY_TO value. */
 
+#define SCANNING_TIMEOUT 8000
+
+#ifdef CONFIG_SCAN_BACKOP
+#define CONC_SCANNING_TIMEOUT_SINGLE_BAND 10000
+#define CONC_SCANNING_TIMEOUT_DUAL_BAND 15000
+#endif
 
 #ifdef PALTFORM_OS_WINCE
 #define	SCANQUEUE_LIFETIME 12000000 /* unit:us */
@@ -1010,11 +1016,10 @@ __inline static void set_scanned_network_val(struct mlme_priv *pmlmepriv, sint v
 }
 
 extern u16 rtw_get_capability(WLAN_BSSID_EX *bss);
-extern bool rtw_update_scanned_network(_adapter *adapter, WLAN_BSSID_EX *target);
+extern void rtw_update_scanned_network(_adapter *adapter, WLAN_BSSID_EX *target);
 extern void rtw_disconnect_hdl_under_linked(_adapter *adapter, struct sta_info *psta, u8 free_assoc);
 extern void rtw_generate_random_ibss(u8 *pibss);
-struct wlan_network *_rtw_find_network(_queue *scanned_queue, const u8 *addr);
-struct wlan_network *rtw_find_network(_queue *scanned_queue, const u8 *addr);
+extern struct wlan_network *rtw_find_network(_queue *scanned_queue, u8 *addr);
 extern struct wlan_network *rtw_get_oldest_wlan_network(_queue *scanned_queue);
 struct wlan_network *_rtw_find_same_network(_queue *scanned_queue, struct wlan_network *network);
 struct wlan_network *rtw_find_same_network(_queue *scanned_queue, struct wlan_network *network);
@@ -1030,7 +1035,7 @@ u32 rtw_scan_abort_timeout(_adapter *adapter, u32 timeout_ms);
 void rtw_scan_abort_no_wait(_adapter *adapter);
 void rtw_scan_abort(_adapter *adapter);
 
-extern int rtw_restruct_sec_ie(_adapter *adapter, u8 *out_ie);
+extern int rtw_restruct_sec_ie(_adapter *adapter, u8 *in_ie, u8 *out_ie, uint in_len);
 #ifdef CONFIG_WMMPS_STA
 void rtw_uapsd_use_default_setting(_adapter *padapter);
 bool rtw_is_wmmps_mode(_adapter *padapter);
@@ -1042,32 +1047,16 @@ extern void rtw_update_registrypriv_dev_network(_adapter *adapter);
 
 extern void rtw_get_encrypt_decrypt_from_registrypriv(_adapter *adapter);
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
-void rtw_join_timeout_handler(void *ctx);
-#else
-void rtw_join_timeout_handler(struct timer_list *t);
-#endif
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
-void rtw_scan_timeout_handler(void *ctx);
-#else
-void rtw_scan_timeout_handler(struct timer_list *t);
-#endif
+extern void rtw_join_timeout_handler(void *ctx);
+extern void rtw_scan_timeout_handler(void *ctx);
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
-void rtw_dynamic_check_timer_handlder(void *ctx);
-#else
-void rtw_dynamic_check_timer_handlder(struct timer_list *t);
-#endif
+extern void rtw_dynamic_check_timer_handlder(void *ctx);
 extern void rtw_iface_dynamic_check_timer_handlder(_adapter *adapter);
 
 #ifdef CONFIG_SET_SCAN_DENY_TIMER
 bool rtw_is_scan_deny(_adapter *adapter);
 void rtw_clear_scan_deny(_adapter *adapter);
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 void rtw_set_scan_deny_timer_hdl(void *ctx);
-#else
-void rtw_set_scan_deny_timer_hdl(struct timer_list *t);
-#endif
 void rtw_set_scan_deny(_adapter *adapter, u32 ms);
 #else
 #define rtw_is_scan_deny(adapter) _FALSE
@@ -1096,6 +1085,9 @@ extern struct wlan_network *_rtw_alloc_network(struct mlme_priv *pmlmepriv);
 
 extern void _rtw_free_network(struct mlme_priv *pmlmepriv, struct wlan_network *pnetwork, u8 isfreeall);
 extern void _rtw_free_network_nolock(struct mlme_priv *pmlmepriv, struct wlan_network *pnetwork);
+
+
+extern struct wlan_network *_rtw_find_network(_queue *scanned_queue, u8 *addr);
 
 extern void _rtw_free_network_queue(_adapter *padapter, u8 isfreeall);
 

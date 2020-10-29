@@ -144,8 +144,13 @@ s32 rtl8710bu_xmit_buf_handler(PADAPTER padapter)
 		return _FAIL;
 	}
 
+#if 1
+	if (check_pending_xmitbuf(pxmitpriv) == _FALSE)
+		return _SUCCESS;
+#else
 	if (rtw_mi_pending_xmitbuf(padapter) == 0)
 		return _SUCCESS;
+#endif
 
 #ifdef CONFIG_LPS_LCLK
 	ret = rtw_register_tx_alive(padapter);
@@ -465,12 +470,12 @@ s32 rtl8710bu_xmitframe_complete(PADAPTER padapter, struct xmit_priv *pxmitpriv,
 	}
 
 	_exit_critical_bh(&pxmitpriv->lock, &irqL);
-
+#ifdef CONFIG_80211N_HT
 	if ((pfirstframe->attrib.ether_type != 0x0806) &&
 	    (pfirstframe->attrib.ether_type != 0x888e) &&
 	    (pfirstframe->attrib.dhcp_pkt != 1))
 		rtw_issue_addbareq_cmd(padapter, pfirstframe);
-
+#endif
 #ifndef CONFIG_USE_USB_BUFFER_ALLOC_TX
 	/* 3 3. update first frame txdesc */
 	if ((PACKET_OFFSET_SZ != 0)

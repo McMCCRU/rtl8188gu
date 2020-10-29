@@ -137,12 +137,12 @@ typedef enum mstat_status {
 #ifdef DBG_MEM_ALLOC
 void rtw_mstat_update(const enum mstat_f flags, const MSTAT_STATUS status, u32 sz);
 void rtw_mstat_dump(void *sel);
-void *dbg_rtw_vmalloc(u32 sz, const enum mstat_f flags, const char *func, const int line);
-void *dbg_rtw_zvmalloc(u32 sz, const enum mstat_f flags, const char *func, const int line);
-void dbg_rtw_vmfree(void *pbuf, const enum mstat_f flags, u32 sz, const char *func, const int line);
-void *dbg_rtw_malloc(u32 sz, const enum mstat_f flags, const char *func, const int line);
-void *dbg_rtw_zmalloc(u32 sz, const enum mstat_f flags, const char *func, const int line);
-void dbg_rtw_mfree(void *pbuf, const enum mstat_f flags, u32 sz, const char *func, const int line);
+u8 *dbg_rtw_vmalloc(u32 sz, const enum mstat_f flags, const char *func, const int line);
+u8 *dbg_rtw_zvmalloc(u32 sz, const enum mstat_f flags, const char *func, const int line);
+void dbg_rtw_vmfree(u8 *pbuf, const enum mstat_f flags, u32 sz, const char *func, const int line);
+u8 *dbg_rtw_malloc(u32 sz, const enum mstat_f flags, const char *func, const int line);
+u8 *dbg_rtw_zmalloc(u32 sz, const enum mstat_f flags, const char *func, const int line);
+void dbg_rtw_mfree(u8 *pbuf, const enum mstat_f flags, u32 sz, const char *func, const int line);
 
 struct sk_buff *dbg_rtw_skb_alloc(unsigned int size, const enum mstat_f flags, const char *func, const int line);
 void dbg_rtw_skb_free(struct sk_buff *skb, const enum mstat_f flags, const char *func, const int line);
@@ -209,12 +209,12 @@ void dbg_rtw_usb_buffer_free(struct usb_device *dev, size_t size, void *addr, dm
 #else /* DBG_MEM_ALLOC */
 #define rtw_mstat_update(flag, status, sz) do {} while (0)
 #define rtw_mstat_dump(sel) do {} while (0)
-void *_rtw_vmalloc(u32 sz);
-void *_rtw_zvmalloc(u32 sz);
-void _rtw_vmfree(void *pbuf, u32 sz);
-void *_rtw_zmalloc(u32 sz);
-void *_rtw_malloc(u32 sz);
-void _rtw_mfree(void *pbuf, u32 sz);
+u8 *_rtw_vmalloc(u32 sz);
+u8 *_rtw_zvmalloc(u32 sz);
+void	_rtw_vmfree(u8 *pbuf, u32 sz);
+u8 *_rtw_zmalloc(u32 sz);
+u8 *_rtw_malloc(u32 sz);
+void	_rtw_mfree(u8 *pbuf, u32 sz);
 
 struct sk_buff *_rtw_skb_alloc(u32 sz);
 void _rtw_skb_free(struct sk_buff *skb);
@@ -323,32 +323,21 @@ extern u32	rtw_end_of_queue_search(_list *queue, _list *pelement);
 extern systime _rtw_get_current_time(void);
 extern u32	_rtw_systime_to_ms(systime stime);
 extern systime _rtw_ms_to_systime(u32 ms);
-extern systime _rtw_us_to_systime(u32 us);
 extern s32	_rtw_get_passing_time_ms(systime start);
-extern s32 _rtw_get_remaining_time_ms(systime end);
 extern s32	_rtw_get_time_interval_ms(systime start, systime end);
-extern bool _rtw_time_after(systime a, systime b);
 
 #ifdef DBG_SYSTIME
 #define rtw_get_current_time() ({systime __stime = _rtw_get_current_time(); __stime;})
 #define rtw_systime_to_ms(stime) ({u32 __ms = _rtw_systime_to_ms(stime); typecheck(systime, stime); __ms;})
 #define rtw_ms_to_systime(ms) ({systime __stime = _rtw_ms_to_systime(ms); __stime;})
-#define rtw_us_to_systime(us) ({systime __stime = _rtw_us_to_systime(us); __stime;})
 #define rtw_get_passing_time_ms(start) ({u32 __ms = _rtw_get_passing_time_ms(start); typecheck(systime, start); __ms;})
-#define rtw_get_remaining_time_ms(end) ({u32 __ms = _rtw_get_remaining_time_ms(end); typecheck(systime, end); __ms;})
 #define rtw_get_time_interval_ms(start, end) ({u32 __ms = _rtw_get_time_interval_ms(start, end); typecheck(systime, start); typecheck(systime, end); __ms;})
-#define rtw_time_after(a,b) ({bool __r = _rtw_time_after(a,b); typecheck(systime, a); typecheck(systime, b); __r;})
-#define rtw_time_before(a,b) ({bool __r = _rtw_time_after(b, a); typecheck(systime, a); typecheck(systime, b); __r;})
 #else
 #define rtw_get_current_time() _rtw_get_current_time()
 #define rtw_systime_to_ms(stime) _rtw_systime_to_ms(stime)
 #define rtw_ms_to_systime(ms) _rtw_ms_to_systime(ms)
-#define rtw_us_to_systime(us) _rtw_us_to_systime(us)
 #define rtw_get_passing_time_ms(start) _rtw_get_passing_time_ms(start)
-#define rtw_get_remaining_time_ms(end) _rtw_get_remaining_time_ms(end)
 #define rtw_get_time_interval_ms(start, end) _rtw_get_time_interval_ms(start, end)
-#define rtw_time_after(a,b) _rtw_time_after(a,b)
-#define rtw_time_before(a,b) _rtw_time_after(b,a)
 #endif
 
 extern void	rtw_sleep_schedulable(int ms);
@@ -371,17 +360,20 @@ extern void	rtw_udelay_os(int us);
 extern void rtw_yield_os(void);
 
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 extern void rtw_init_timer(_timer *ptimer, void *padapter, void *pfunc, void *ctx);
-#endif
+
 
 __inline static unsigned char _cancel_timer_ex(_timer *ptimer)
 {
 	u8 bcancelled;
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0))
+	return del_timer_sync(&ptimer->t);
+#else
 	_cancel_timer(ptimer, &bcancelled);
 
 	return bcancelled;
+#endif //(LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0))
 }
 
 static __inline void thread_enter(char *name)
@@ -683,17 +675,6 @@ extern u32 rtw_random32(void);
 			 (((u64) (a)[5]) << 40) | (((u64) (a)[4]) << 32) | \
 			 (((u64) (a)[3]) << 24) | (((u64) (a)[2]) << 16) | \
 			 (((u64) (a)[1]) << 8) | ((u64) (a)[0]))
-#define RTW_PUT_LE64(a, val)					\
-	do {							\
-		(a)[7] = (u8) ((((u64) (val)) >> 56) & 0xff);	\
-		(a)[6] = (u8) ((((u64) (val)) >> 48) & 0xff);	\
-		(a)[5] = (u8) ((((u64) (val)) >> 40) & 0xff);	\
-		(a)[4] = (u8) ((((u64) (val)) >> 32) & 0xff);	\
-		(a)[3] = (u8) ((((u64) (val)) >> 24) & 0xff);	\
-		(a)[2] = (u8) ((((u64) (val)) >> 16) & 0xff);	\
-		(a)[1] = (u8) ((((u64) (val)) >> 8) & 0xff);	\
-		(a)[0] = (u8) (((u64) (val)) & 0xff);		\
-	} while (0)
 
 void rtw_buf_free(u8 **buf, u32 *buf_len);
 void rtw_buf_update(u8 **buf, u32 *buf_len, u8 *src, u32 src_len);

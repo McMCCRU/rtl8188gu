@@ -74,7 +74,6 @@ u8 rtw_do_join(_adapter *padapter)
 	_list	*plist, *phead;
 	u8 *pibss = NULL;
 	struct	mlme_priv	*pmlmepriv = &(padapter->mlmepriv);
-	struct sitesurvey_parm parm;
 	_queue	*queue	= &(pmlmepriv->scanned_queue);
 	u8 ret = _SUCCESS;
 
@@ -92,10 +91,6 @@ u8 rtw_do_join(_adapter *padapter)
 
 	pmlmepriv->to_join = _TRUE;
 
-	rtw_init_sitesurvey_parm(padapter, &parm);
-	_rtw_memcpy(&parm.ssid[0], &pmlmepriv->assoc_ssid, sizeof(NDIS_802_11_SSID));
-	parm.ssid_num = 1;
-
 	if (_rtw_queue_empty(queue) == _TRUE) {
 		_exit_critical_bh(&(pmlmepriv->scanned_queue.lock), &irqL);
 		_clr_fwstate_(pmlmepriv, _FW_UNDER_LINKING);
@@ -107,7 +102,7 @@ u8 rtw_do_join(_adapter *padapter)
 		    || rtw_to_roam(padapter) > 0
 		   ) {
 			/* submit site_survey_cmd */
-			ret = rtw_sitesurvey_cmd(padapter, &parm);
+			ret = rtw_sitesurvey_cmd(padapter, &pmlmepriv->assoc_ssid, 1, NULL, 0);
 			if (_SUCCESS != ret) {
 				pmlmepriv->to_join = _FALSE;
 			}
@@ -161,7 +156,7 @@ u8 rtw_do_join(_adapter *padapter)
 						/* for funk to do roaming */
 						/* funk will reconnect, but funk will not sitesurvey before reconnect */
 						if (pmlmepriv->sitesurveyctrl.traffic_busy == _FALSE)
-							rtw_sitesurvey_cmd(padapter, &parm);
+							rtw_sitesurvey_cmd(padapter, &pmlmepriv->assoc_ssid, 1, NULL, 0);
 					}
 
 				}
@@ -173,7 +168,7 @@ u8 rtw_do_join(_adapter *padapter)
 				    || rtw_to_roam(padapter) > 0
 				   ) {
 					/* RTW_INFO("rtw_do_join() when   no desired bss in scanning queue\n"); */
-					ret = rtw_sitesurvey_cmd(padapter, &parm);
+					ret = rtw_sitesurvey_cmd(padapter, &pmlmepriv->assoc_ssid, 1, NULL, 0);
 					if (_SUCCESS != ret) {
 						pmlmepriv->to_join = _FALSE;
 					}
@@ -615,21 +610,21 @@ u8 rtw_set_802_11_disassociate(_adapter *padapter)
 }
 
 #if 1
-u8 rtw_set_802_11_bssid_list_scan(_adapter *padapter, struct sitesurvey_parm *pparm)
+u8 rtw_set_802_11_bssid_list_scan(_adapter *padapter, NDIS_802_11_SSID *pssid, int ssid_max_num, struct rtw_ieee80211_channel *ch, int ch_num)
 {
 	_irqL	irqL;
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
 	u8	res = _TRUE;
 
 	_enter_critical_bh(&pmlmepriv->lock, &irqL);
-	res = rtw_sitesurvey_cmd(padapter, pparm);
+	res = rtw_sitesurvey_cmd(padapter, pssid, ssid_max_num, ch, ch_num);
 	_exit_critical_bh(&pmlmepriv->lock, &irqL);
 
 	return res;
 }
 
 #else
-u8 rtw_set_802_11_bssid_list_scan(_adapter *padapter, struct sitesurvey_parm *pparm)
+u8 rtw_set_802_11_bssid_list_scan(_adapter *padapter, NDIS_802_11_SSID *pssid, int ssid_max_num, struct rtw_ieee80211_channel *ch, int ch_num)
 {
 	_irqL	irqL;
 	struct	mlme_priv		*pmlmepriv = &padapter->mlmepriv;
@@ -661,7 +656,7 @@ u8 rtw_set_802_11_bssid_list_scan(_adapter *padapter, struct sitesurvey_parm *pp
 
 		_enter_critical_bh(&pmlmepriv->lock, &irqL);
 
-		res = rtw_sitesurvey_cmd(padapter, pparm);
+		res = rtw_sitesurvey_cmd(padapter, pssid, ssid_max_num, NULL, 0, ch, ch_num);
 
 		_exit_critical_bh(&pmlmepriv->lock, &irqL);
 	}

@@ -184,13 +184,13 @@ odm_config_rf_with_header_file(
 			if (p_dm->rfe_type == 0)
 				READ_AND_CONFIG_MP(8814a,_txpwr_lmt_type0);
 			else if (p_dm->rfe_type == 1)
-				READ_AND_CONFIG_MP(8814a,_txpwr_lmt_type1);				
+				READ_AND_CONFIG_MP(8814a,_txpwr_lmt_type1);
 			else if (p_dm->rfe_type == 2)
-				READ_AND_CONFIG_MP(8814a,_txpwr_lmt_type2);		
+				READ_AND_CONFIG_MP(8814a,_txpwr_lmt_type2);
 			else if (p_dm->rfe_type == 3)
-				READ_AND_CONFIG_MP(8814a,_txpwr_lmt_type3);		
+				READ_AND_CONFIG_MP(8814a,_txpwr_lmt_type3);
 			else if (p_dm->rfe_type == 5)
-				READ_AND_CONFIG_MP(8814a,_txpwr_lmt_type5);		
+				READ_AND_CONFIG_MP(8814a,_txpwr_lmt_type5);
 			else if (p_dm->rfe_type == 7)
 				READ_AND_CONFIG_MP(8814a,_txpwr_lmt_type7);
 			else if (p_dm->rfe_type == 8)
@@ -348,12 +348,10 @@ odm_config_rf_with_tx_pwr_track_header_file(
 /* JJ ADD 20161014 */
 #if RTL8710B_SUPPORT
 	if (p_dm->support_ic_type == ODM_RTL8710B) {
-		if (p_dm->support_interface == ODM_ITRF_PCIE)
-			READ_AND_CONFIG_MP(8710b, _txpowertrack_pcie);
-		else if (p_dm->support_interface == ODM_ITRF_USB)
-			READ_AND_CONFIG_MP(8710b, _txpowertrack_usb);
-		else if (p_dm->support_interface == ODM_ITRF_SDIO)
-			READ_AND_CONFIG_MP(8710b, _txpowertrack_sdio);
+		if (p_dm->package_type == 1)
+			READ_AND_CONFIG_MP(8710b, _txpowertrack_qfn48m_smic);
+		else if (p_dm->package_type == 5)
+			READ_AND_CONFIG_MP(8710b, _txpowertrack_qfn48m_umc);
 
 		READ_AND_CONFIG_MP(8710b, _txxtaltrack);
 	}
@@ -643,13 +641,13 @@ odm_config_bb_with_header_file(
 			if (p_dm->rfe_type == 0)
 				READ_AND_CONFIG_MP(8814a,_phy_reg_pg_type0);
 			else if (p_dm->rfe_type == 2)
-				READ_AND_CONFIG_MP(8814a,_phy_reg_pg_type2);				
+				READ_AND_CONFIG_MP(8814a,_phy_reg_pg_type2);
 			else if (p_dm->rfe_type == 3)
-				READ_AND_CONFIG_MP(8814a,_phy_reg_pg_type3);		
+				READ_AND_CONFIG_MP(8814a,_phy_reg_pg_type3);
 			else if (p_dm->rfe_type == 4)
-				READ_AND_CONFIG_MP(8814a,_phy_reg_pg_type4);		
+				READ_AND_CONFIG_MP(8814a,_phy_reg_pg_type4);
 			else if (p_dm->rfe_type == 5)
-				READ_AND_CONFIG_MP(8814a,_phy_reg_pg_type5);		
+				READ_AND_CONFIG_MP(8814a,_phy_reg_pg_type5);
 			else if (p_dm->rfe_type == 7)
 				READ_AND_CONFIG_MP(8814a,_phy_reg_pg_type7);
 			else if (p_dm->rfe_type == 8)
