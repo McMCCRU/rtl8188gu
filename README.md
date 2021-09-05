@@ -2,6 +2,8 @@
 Driver for Linux RTL8188GU (RTL8710B) (VID:PID = 0x0BDA:0xB711)
 ===============================================================
 
+### NOTE: Works up to 5.8 kernel!
+
 Is not original driver from Realtek, is build from source code from others official Realtek drivers.
 
 Compiling & Building
@@ -21,6 +23,29 @@ consult your distro.
 ### Disable CDROM mode and select in WiFi mode. (not for Ubuntu 20.04)
 
 > eject /dev/cdrom0
+
+### Load new wifi driver
+
+> sudo modprobe rtl8188gu
+
+## For uninstalling
+
+> sudo modprobe -r rtl8188gu
+> sudo make uninstall
+
+## If your device is recognized as a CD
+
+> lsusb
+
+Write down your XXXX:YYYY adress.  (In my case, is 0bda:1a2b)
+
+> sudo usb_modeswitch -KW -v XXXX -p YYYY
+
+
+
+===============================================================
+
+
 
 ### Known problems
 
