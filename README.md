@@ -16,7 +16,13 @@ consult your distro.
 
 > make
 
-### Installing
+### Recommended install (DKMS = automatically rebuild after kernel upgrade)
+
+> sudo dkms add ./rtl8188gu
+> sudo dkms build rtl8188gu/1.0
+> sudo dkms install rtl8188fu/1.0
+
+### Manual Install
 
 > sudo make install
 
