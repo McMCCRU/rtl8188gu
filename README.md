@@ -2,8 +2,6 @@
 Driver for Linux RTL8188GU (RTL8710B) (VID:PID = 0x0BDA:0xB711)
 ===============================================================
 
-### NOTE: Works up to 5.8 kernel!
-
 Is not original driver from Realtek, is build from source code from others official Realtek drivers.
 
 Compiling & Building
