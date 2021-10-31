@@ -15,7 +15,9 @@ consult your distro.
 ### Install
 
 > sudo dkms add ./rtl8188gu
+
 > sudo dkms build rtl8188gu/1.0
+
 > sudo dkms install rtl8188fu/1.0
 
 ### Uninstall
@@ -26,11 +28,13 @@ consult your distro.
 ### Install
 
 > sudo make
+
 > sudo make install
 
 ### Uninstall
 
 > sudo modprobe -r rtl8188gu
+
 > sudo make uninstall
 
 ## Load new wifi driver
