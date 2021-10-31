@@ -350,7 +350,7 @@ static int napi_recv(_adapter *padapter, int budget)
 
 		rx_ok = _FALSE;
 
-#ifdef CONFIG_RTW_GRO
+#if defined(CONFIG_RTW_GRO) && LINUX_VERSION_CODE < KERNEL_VERSION(5, 12, 0)
 		if (pregistrypriv->en_gro) {
 			if (rtw_napi_gro_receive(&padapter->napi, pskb) != GRO_DROP)
 				rx_ok = _TRUE;
