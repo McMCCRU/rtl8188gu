@@ -265,7 +265,7 @@ void rtl8710b_InitializeFirmwareVars(PADAPTER padapter)
 	adapter_to_pwrctl(padapter)->bFwCurrentInPSMode = _FALSE;
 
 	/* Init H2C cmd. */
-	//rtw_write8(padapter, REG_HMETFR, 0x0f);
+	rtw_write8(padapter, REG_HMETFR, 0x0f);
 
 	/* Init H2C counter. by tynli. 2009.12.09. */
 	pHalData->LastHMEBoxNum = 0;

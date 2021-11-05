@@ -248,7 +248,7 @@ if (*(p_dm->p_mp_mode) == true) {
 		u16	rate	 = *(p_dm->p_forced_data_rate);
 
 		if (!rate) { /*auto rate*/
-			if (rate != 0xFF) {
+			if (rate != 0xFF && p_dm->tx_rate != 0xFF) {
 #if (DM_ODM_SUPPORT_TYPE & ODM_WIN)
 				tx_rate = adapter->HalFunc.GetHwRateFromMRateHandler(p_dm->tx_rate);
 #elif (DM_ODM_SUPPORT_TYPE & ODM_CE)
@@ -712,7 +712,7 @@ get_delta_swing_table_8710b(
 		u16	rate	 = *(p_dm->p_forced_data_rate);
 
 		if (!rate) { /*auto rate*/
-			if (rate != 0xFF) {
+			if (rate != 0xFF && p_dm->tx_rate != 0xFF) {
 #if (DM_ODM_SUPPORT_TYPE & ODM_WIN)
 				tx_rate = adapter->HalFunc.GetHwRateFromMRateHandler(p_dm->tx_rate);
 #elif (DM_ODM_SUPPORT_TYPE & ODM_CE)
