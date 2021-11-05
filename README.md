@@ -10,54 +10,17 @@ Compiling & Building
 To compile the driver, you need to have make and a compiler installed. In addition,
 you must have the kernel headers installed. If you do not understand what this means,
 consult your distro.
+### Compiling
 
-## Automatic (DKMS = automatically rebuild after kernel upgrade)
-### Install
+> make
 
-> sudo dkms add ./rtl8188gu
-
-> sudo dkms build rtl8188gu/1.0
-
-> sudo dkms install rtl8188fu/1.0
-
-### Uninstall
-
-> sudo dkms uninstall rtl8188fu/1.0
-
-## Manual
-### Install
-
-> sudo make
+### Installing
 
 > sudo make install
 
-### Uninstall
-
-> sudo modprobe -r rtl8188gu
-
-> sudo make uninstall
-
-## Load new wifi driver
-
-> sudo modprobe rtl8188gu
-
-## Disable CDROM mode and select in WiFi mode. (not for Ubuntu 20.04)
+### Disable CDROM mode and select in WiFi mode. (not for Ubuntu 20.04)
 
 > eject /dev/cdrom0
-
-## If your device is recognized as a CD
-
-> lsusb
-
-Write down your XXXX:YYYY adress.  (In my case, is 0bda:1a2b)
-
-> sudo usb_modeswitch -KW -v XXXX -p YYYY
-
-
-
-===============================================================
-
-
 
 ### Known problems
 
