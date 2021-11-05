@@ -7103,7 +7103,7 @@ void rtw_cfg80211_init_wiphy(_adapter *padapter)
 	}
 #endif
 	/* init regulary domain */
-	rtw_regd_init(padapter);
+	//rtw_regd_init(padapter);
 
 	/* copy mac_addr to wiphy */
 	_rtw_memcpy(wiphy->perm_addr, adapter_mac_addr(padapter), ETH_ALEN);
@@ -7587,6 +7587,7 @@ int rtw_wiphy_register(struct wiphy *wiphy)
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 14, 0)) || defined(RTW_VENDOR_EXT_SUPPORT)
 	rtw_cfgvendor_attach(wiphy);
 #endif
+	rtw_regd_init(wiphy_to_adapter(wiphy));
 
 	return wiphy_register(wiphy);
 }
