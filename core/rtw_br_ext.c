@@ -15,9 +15,12 @@
 #define _RTW_BR_EXT_C_
 
 #ifdef __KERNEL__
+	#include <linux/version.h>
 	#include <linux/if_arp.h>
 	#include <net/ip.h>
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 15, 0))
 	#include <net/ipx.h>
+#endif
 	#include <linux/atalk.h>
 	#include <linux/udp.h>
 	#include <linux/if_pppox.h>
