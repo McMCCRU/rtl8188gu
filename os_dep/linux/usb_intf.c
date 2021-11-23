@@ -260,6 +260,7 @@ static struct usb_device_id rtw_usb_id_tbl[] = {
 #ifdef CONFIG_RTL8710B
 	/*=== Realtek dongle ===*/
 	{USB_DEVICE_AND_INTERFACE_INFO(USB_VENDER_ID_REALTEK, 0xB711, 0xff, 0xff, 0xff), .driver_info = RTL8710B}, /* 8710B = 8188GU 1*1 */
+	{USB_DEVICE_AND_INTERFACE_INFO(USB_VENDER_ID_REALTEK, 0x2005, 0xff, 0xff, 0xff), .driver_info = RTL8710B}, /* TOTOLINK N150UA-B, 8188GU 1*1 */
 #endif
 
 #ifdef CONFIG_RTL8821C
