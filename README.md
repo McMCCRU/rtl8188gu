@@ -19,6 +19,8 @@ consult your distro.
 
 > paru -S rtl8188gu-dkms-git
 
+See [for Ubuntu and others](https://tutorialforlinux.com/2022/01/07/how-to-add-realtek-rtl8188gu-driver-ppa-for-ubuntu-based-systems/)
+
 ### Manually
 
 #### Compiling
