@@ -10,11 +10,18 @@ Compiling & Building
 To compile the driver, you need to have make and a compiler installed. In addition,
 you must have the kernel headers installed. If you do not understand what this means,
 consult your distro.
-### Compiling
+
+### Via DKMS
+
+> sudo dkms install .
+
+### Manually
+
+#### Compiling
 
 > make
 
-### Installing
+#### Installing
 
 > sudo make install
 
@@ -29,4 +36,4 @@ consult your distro.
 3. In Ubuntu 20.04 detected as GSM modem, need remove option driver as "sudo rmmod option".
 
 ### Testing
-I tested on Ubuntu 16.04, 20.04 and last version OpenWRT, it's work...
+The original author [McMCCRU](https://github.com/McMCCRU) tested on Ubuntu 16.04, 20.04 and last version OpenWRT, it's work...
