@@ -15,6 +15,10 @@ consult your distro.
 
 > sudo dkms install .
 
+### Arch
+
+> paru -S rtl8188gu-dkms-git
+
 ### Manually
 
 #### Compiling
