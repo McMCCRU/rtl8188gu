@@ -41,3 +41,4 @@ consult your distro.
 
 ### Testing
 The original author [McMCCRU](https://github.com/McMCCRU) tested on Ubuntu 16.04, 20.04 and last version OpenWRT, it's work...
+I have tested this on Arch, Manjaro 22, Ubuntu 21.10, Debian 11, Fedora 35, openSUSE 15.3.
