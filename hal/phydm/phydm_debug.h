@@ -122,8 +122,7 @@
 #endif
 
 #if DBG
-#define PHYDM_DBG(p_dm, comp, fmt)				\
-	do {													\
+#define PHYDM_DBG(p_dm, comp, fmt)									 do {\
 		if ((comp) & (p_dm->debug_components)) {	\
 														\
 			dbg_print("[PHYDM] ");						\
