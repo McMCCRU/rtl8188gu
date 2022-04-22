@@ -3610,9 +3610,11 @@ u8 SetHwReg8710B(PADAPTER padapter, u8 variable, u8 *val)
 		/* Joseph marked out for Netgear 3500 TKIP channel 7 issue.(Temporarily) */
 		/* regTmp = (pHalData->nCur40MhzPrimeSC)<<5; */
 		regTmp = 0;
+
 		if (bShortPreamble)
 			regTmp |= 0x80;
-			rtw_write8(padapter, REG_RRSR + 2, regTmp);
+
+		rtw_write8(padapter, REG_RRSR + 2, regTmp);
 	}
 		break;
 
