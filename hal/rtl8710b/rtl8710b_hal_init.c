@@ -214,7 +214,6 @@ exit:
 	return ret;
 }
 
-#ifdef PLATFORM_WINDOWS
 static s32 _FWFreeToGo(_adapter *adapter, u32 min_cnt, u32 timeout_ms)
 {
 	s32 ret = _FAIL;
@@ -255,7 +254,6 @@ exit:
 
 	return ret;
 }
-#endif
 
 void rtl8710b_InitializeFirmwareVars(PADAPTER padapter)
 {
@@ -572,9 +570,7 @@ s32 rtl8710b_FirmwareDownload(PADAPTER padapter, BOOLEAN  bUsedWoWLANFw)
 		// 20150128 Sinda/SD-Alex, OS will write 1dx during download FW to let driver stuck for waiting FW clear 0x1cc when resume from sleep.
 		// Driver clear 0x1cc irrespective of download FW successful or failure to avoid driver stuck.
 		rtw_write8(padapter, REG_HMETFR_8710B, 0xF);
-#ifdef PLATFORM_WINDOWS
 		rtStatus = _FWFreeToGo(padapter, 10, 200);
-#endif
 	}
 	else
 		goto DLFW_FAIL;
