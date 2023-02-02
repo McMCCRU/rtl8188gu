@@ -1885,7 +1885,8 @@ endif
 
 obj-$(CONFIG_RTL8710BU) := $(MODULE_NAME).o
 
-else
+#else
+endif
 
 export CONFIG_RTL8710BU = m
 
@@ -1961,4 +1962,4 @@ clean:
 	rm -fr *.mod.c *.mod *.o *.o.* .*.cmd *.ko *~
 	rm -fr .tmp_versions
 	rm -fr .cache.mk
-endif
+#endif
