@@ -27,6 +27,11 @@ consult your distro.
 1. Very slow upload speed.
 2. Problem reconnect from KNetworkManager in Kubuntu 20.04.
 3. In Ubuntu 20.04 detected as GSM modem, need remove option driver as "sudo rmmod option".
+4. In OrangePI debian 11 will get error: 'modpost: module 8723ds uses symbol kernel_write from namespace VFS_internal_I_am_really_a_filesystem_and_am_NOT_a_driver, but does not import it.' import it in os_dep/linux/os_intfs.c to fix
+```
+sed -i '31i MODULE_IMPORT_NS(VFS_internal_I_am_really_a_filesystem_and_am_NOT_a_driver);' os_dep/linux/os_intfs.c
+```
 
 ### Testing
 I tested on Ubuntu 16.04, 20.04 and last version OpenWRT, it's work...
+I tested ARM64 on Orange PI 5(Debian 11), ARM on Raspberry PI 2( Debian 11), it's work...
