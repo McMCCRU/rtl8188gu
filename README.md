@@ -10,11 +10,24 @@ Compiling & Building
 To compile the driver, you need to have make and a compiler installed. In addition,
 you must have the kernel headers installed. If you do not understand what this means,
 consult your distro.
-### Compiling
+
+### Via DKMS
+
+> sudo dkms install .
+
+### Arch
+
+> paru -S rtl8188gu-dkms-git
+
+See [for Ubuntu and others](https://tutorialforlinux.com/2022/01/07/how-to-add-realtek-rtl8188gu-driver-ppa-for-ubuntu-based-systems/)
+
+### Manually
+
+#### Compiling
 
 > make
 
-### Installing
+#### Installing
 
 > sudo make install
 
@@ -29,4 +42,5 @@ consult your distro.
 3. In Ubuntu 20.04 detected as GSM modem, need remove option driver as "sudo rmmod option".
 
 ### Testing
-I tested on Ubuntu 16.04, 20.04 and last version OpenWRT, it's work...
+The original author [McMCCRU](https://github.com/McMCCRU) tested on Ubuntu 16.04, 20.04 and last version OpenWRT, it's work...
+I have tested this on Arch, Manjaro 22, Ubuntu 21.10, Debian 11, Fedora 35, openSUSE 15.3.
