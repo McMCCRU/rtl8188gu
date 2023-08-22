@@ -10,6 +10,9 @@ Compiling & Building
 To compile the driver, you need to have make and a compiler installed. In addition,
 you must have the kernel headers installed. If you do not understand what this means,
 consult your distro.
+
+Some devices may also require `usb_modeswitch`, which is a tool for controlling the mode of USB devices. This is necessary to switch the device from CDROM mode to WiFi mode.
+
 ### Compiling
 
 > make
@@ -21,6 +24,8 @@ consult your distro.
 ### Disable CDROM mode and select in WiFi mode. (not for Ubuntu 20.04)
 
 > eject /dev/cdrom0
+
+If your device is detected as a CDROM, you may need to install `usb_modeswitch`. This will automatically switch the device from CDROM mode to WiFi mode when you plug it in. 
 
 ### Known problems
 
