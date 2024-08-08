@@ -395,7 +395,7 @@ u8 rtw_cfg80211_ch_switch_notify(_adapter *adapter, u8 ch, u8 bw, u8 offset, u8 
 #if LINUX_VERSION_CODE < KERNEL_VERSION(5, 19, 2)
 	cfg80211_ch_switch_notify(adapter->pnetdev, &chdef);
 #else
-	cfg80211_ch_switch_notify(adapter->pnetdev, &chdef, 0);
+	cfg80211_ch_switch_notify(adapter->pnetdev, &chdef, 0, 0);
 #endif
 
 #else
